@@ -1,0 +1,27 @@
+
+@import url(//db.onlinewebfonts.com/c/3671adca6f650c92b83f906e49656986?family=B+Nazanin);
+@font-face {font-family: "B Nazanin"; src: url("//db.onlinewebfonts.com/t/3671adca6f650c92b83f906e49656986.eot"); src: url("//db.onlinewebfonts.com/t/3671adca6f650c92b83f906e49656986.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/3671adca6f650c92b83f906e49656986.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/3671adca6f650c92b83f906e49656986.woff") format("woff"), url("//db.onlinewebfonts.com/t/3671adca6f650c92b83f906e49656986.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/3671adca6f650c92b83f906e49656986.svg#B Nazanin") format("svg"); }
+@font-face {font-family: "B Titr"; src: url("//db.onlinewebfonts.com/t/a0ea7e7833cd4f7694a4913fccb9aacf.eot"); src: url("//db.onlinewebfonts.com/t/a0ea7e7833cd4f7694a4913fccb9aacf.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/a0ea7e7833cd4f7694a4913fccb9aacf.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/a0ea7e7833cd4f7694a4913fccb9aacf.woff") format("woff"), url("//db.onlinewebfonts.com/t/a0ea7e7833cd4f7694a4913fccb9aacf.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/a0ea7e7833cd4f7694a4913fccb9aacf.svg#B Titr") format("svg"); }
+@font-face{
+  font-family: Vazir-Bold;
+  src:url('../fonts/vazir/Vazir-Bold.eot');
+  src:url('../fonts/vazir/Vazir-Bold.eot') format('embedded-opentype'),
+  url('../fonts/vazir/Vazir-Bold.woff2') format('woff2'),
+  url('../fonts/vazir/Vazir-Bold.woff') format('woff')
+}
+@font-face{
+  font-family:iransans-normal;
+  src:url('../fonts/iransans-normal/eot/IRANSansWeb_Medium.eot');
+  src:url('../fonts/iransans-normal/eot/IRANSansWeb_Medium.eot') format('embedded-opentype'),
+  url('../fonts/iransans-normal/woff/IRANSansWeb(FaNum).woff') format('woff'),
+  url('../fonts/iransans-normal/woff2/IRANSansWeb_Medium.woff2') format('woff2')
+
+}
+@font-face{
+  font-family:iranyekan;
+  src:url('../fonts/IRANYekan/eot/iranyekanweblight.eot');
+  src:url('../fonts/IRANYekan/eot/iranyekanweblight.eot') format('embedded-opentype'),
+  url('../fonts/IRANYekan/woff/iranyekanwebextrabold.woff') format('woff'),
+
+
+}
