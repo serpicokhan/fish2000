@@ -112,3 +112,5 @@ def insert_personel_data_from_csv(request):
                 TelegramNumber=row['TelegramNumber'],
             )
             personnel.save()
+def login_to_load_file(request):
+    return render(request,'myapp/personel/login.html',{})
