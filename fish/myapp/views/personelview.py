@@ -1,9 +1,16 @@
 import csv
 from datetime import datetime
-from myapp.models import Personnel  # Replace 'myapp' with the name of your Django app
+from myapp.models import Personnel,PersonelFile  # Replace 'myapp' with the name of your Django app
 from django.shortcuts import render
 from django.core.paginator import *
+from django.http import JsonResponse
 from myapp.forms import PersonelForm
+from django.views.decorators import csrf
+from django.db.models import Q
+import os
+from django.db import transaction
+from django.views.decorators.csrf import csrf_exempt
+
 def doPaging(request,books):
     page=request.GET.get('page',1)
     paginator = Paginator(books, 8)
@@ -29,7 +36,7 @@ def view_profile(request):
 
 def convert_to_int(value):
     if(value == 'NULL' or value is None):
-        return None
+        return 0
     else:
         return int(value)
 
@@ -114,3 +121,32 @@ def insert_personel_data_from_csv(request):
             personnel.save()
 def login_to_load_file(request):
     return render(request,'myapp/personel/login.html',{})
+def file_upload_doc(request):
+        cp=request.POST.get('code',False)
+        code_meli=request.POST.get('code_meli',False)
+        return render(request, 'myapp/files.html', {'cp':cp,'code_meli':code_meli})
+
+@csrf_exempt
+def handle_file_upload(request):
+
+    if request.method == 'POST' and request.FILES['file']:
+        uploaded_file = request.FILES['file']
+        current_datetime = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        code=request.GET.get("code",False)
+        code_meli=request.GET.get("code_meli",False)
+        btn_type=request.GET.get("btnType",False)
+        print(code,code_meli)
+        # New directory where the files will be saved (named with the current date and time)
+        # upload_directory = f'media/uploads/{current_datetime}/'
+        # os.makedirs(upload_directory, exist_ok=True)
+        # # Replace 'uploads/' with the desired directory path to save the uploaded files
+        # with open(os.path.join(upload_directory, uploaded_file.name), 'wb+') as destination_file:
+        #     for chunk in uploaded_file.chunks():
+        #         destination_file.write(chunk)
+        PersonelFile.objects.create(msgFile=uploaded_file,msgFiledtype=btn_type)
+
+        return JsonResponse({'message': 'File uploaded successfully.', 'file_name': uploaded_file.name})
+    else:
+        return JsonResponse({'error': 'No file was uploaded.'})
+
+

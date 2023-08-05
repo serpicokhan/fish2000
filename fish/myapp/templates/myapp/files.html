@@ -13,6 +13,9 @@
     <div class="progress mt-3" style="display: none;">
       <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
     </div>
+    <input type="hidden" id="code" value={{cp}}/>
+    <input type="hidden" id="code_meli" value={{code_meli}}/>
+    
     <div id="filePreviews" class="mt-3"></div>
   </div>
   <style>
@@ -34,7 +37,7 @@
   <!-- Custom JavaScript -->
   <script>
     // Function to handle file selection and upload for each button
-    function handleFileUpload(buttonValue) {
+    function handleFileUpload(buttonValue,buttonType) {
       var fileInput = document.createElement('input');
       fileInput.type = 'file';
       fileInput.accept = 'image/*';
@@ -48,7 +51,7 @@
         var formData = new FormData();
         formData.append('file', file);
         // Replace 'YOUR_UPLOAD_URL_HERE' with the actual server-side endpoint to handle file upload
-        var url = '/upload/';
+        var url = '/upload/?cp='+$("#code").val()+'&code_meli='+$("#code_meli").val()+'&btnType='+buttonType;
 
         var xhr = new XMLHttpRequest();
         xhr.open('POST', url, true);
@@ -109,16 +112,16 @@
       }
     }
     var buttonsData = [
-          { name: 'صفحه اول شناسنامه' },
-          { name: 'Button B' },
-          { name: 'Button C' },
-          { name: 'Button D' },
-          { name: 'Button E' },
-          { name: 'Button F' },
-          { name: 'Button G' },
-          { name: 'Button H' },
-          { name: 'Button I' },
-          { name: 'Button J' }
+          { name: 'صفحه اول شناسنامه',type:1 },
+          { name: 'صفحه دوم شناسنامه',type:2 },
+          { name: 'صفحه انهایی شناسنامه',type:3 },
+          { name: 'صفحه اول شناسنامه همسر',type:4 },
+          { name: 'صفحه اول شناسنامه فرزند',type:5 },
+          { name: 'افزودن شناسنامه فرزند',type:6 },
+          { name: 'Button G',type:7 },
+          { name: 'Button H',type:8 },
+          { name: 'Button I',type:9 },
+          { name: 'Button J',type:10 }
         ];
     // Create 10 buttons dynamically
     var buttonsRow = document.getElementById('buttonsRow');
@@ -128,8 +131,9 @@
       button.className = 'btn btn-primary btn-block mr-2';
       button.textContent = buttonsData[i].name;
       button.value = buttonsData[i].name;
+      button.data_url=buttonsData[i].type;
       button.onclick = function() {
-        handleFileUpload(this.value);
+        handleFileUpload(this.value,this.data_url);
       };
 
       buttonsRow.appendChild(button);

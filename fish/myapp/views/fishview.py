@@ -186,26 +186,3 @@ def register_shekayat(reuqest,id):
         fish.save()
 
         return HttpResponseRedirect(reverse('index'))
-
-@csrf_exempt
-def handle_file_upload(request):
-    print(request.FILES)
-
-    if request.method == 'POST' and request.FILES['file']:
-        uploaded_file = request.FILES['file']
-        current_datetime = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-
-        # New directory where the files will be saved (named with the current date and time)
-        upload_directory = f'media/uploads/{current_datetime}/'
-        os.makedirs(upload_directory, exist_ok=True)
-        # Replace 'uploads/' with the desired directory path to save the uploaded files
-        with open(os.path.join(upload_directory, uploaded_file.name), 'wb+') as destination_file:
-            for chunk in uploaded_file.chunks():
-                destination_file.write(chunk)
-
-        return JsonResponse({'message': 'File uploaded successfully.', 'file_name': uploaded_file.name})
-    else:
-        return JsonResponse({'error': 'No file was uploaded.'})
-
-def file_upload_doc(request):
-        return render(request, 'myapp/files.html', {})

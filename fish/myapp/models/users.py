@@ -96,7 +96,6 @@ class UserFile(models.Model):
     class Meta:
         db_table="userfile"
 
-from django.db import models
 
 class Personnel(models.Model):
     Pid = models.IntegerField()
@@ -151,3 +150,18 @@ class Personnel(models.Model):
 
     def __str__(self):
         return f"{self.FName} {self.LName}"
+class PersonelFile(models.Model):
+    def get_ext(self):
+        v=os.path.splitext(self.woFile.name)
+        return v[len(v)-1]
+    def get_name(self):
+        return os.path.basename(str(self.msgFile))
+    def get_size(self):
+        return " MB {0:.2f}".format(self.woFile.size/1048576)
+
+    msgFile=models.FileField(upload_to='documents/Personel/%Y/%m/%d',max_length=200)
+    msgFilePersonel=models.ForeignKey(Personnel, verbose_name="personel_file", on_delete=models.CASCADE,blank=True,null=True)
+    msgFiledateAdded=models.DateTimeField(auto_now_add=True)
+    msgFiledtype=models.IntegerField()
+    class Meta:
+        db_table="personelfile"
