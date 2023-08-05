@@ -135,6 +135,9 @@ def handle_file_upload(request):
         code=request.GET.get("code",False)
         code_meli=request.GET.get("code_meli",False)
         btn_type=request.GET.get("btnType",False)
+        print(Personnel.objects.filter(NCode='{}'.format(code_meli)).query)
+        print('!!!!!!!!!!!!!!!!!!!!')
+        p=Personnel.objects.get(NCode='{}'.format(code_meli))
         print(code,code_meli)
         # New directory where the files will be saved (named with the current date and time)
         # upload_directory = f'media/uploads/{current_datetime}/'
@@ -143,7 +146,7 @@ def handle_file_upload(request):
         # with open(os.path.join(upload_directory, uploaded_file.name), 'wb+') as destination_file:
         #     for chunk in uploaded_file.chunks():
         #         destination_file.write(chunk)
-        PersonelFile.objects.create(msgFile=uploaded_file,msgFiledtype=btn_type)
+        PersonelFile.objects.create(msgFile=uploaded_file,msgFiledtype=btn_type,msgFilePersonel=p)
 
         return JsonResponse({'message': 'File uploaded successfully.', 'file_name': uploaded_file.name})
     else:
