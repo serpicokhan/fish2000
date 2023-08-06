@@ -58,7 +58,7 @@
   <!-- Custom JavaScript -->
   <script>
     // Function to handle file selection and upload for each button
-    function handleFileUpload(buttonValue,buttonType) {
+    function handleFileUpload(buttonValue,buttonType,btnName) {
       var fileInput = document.createElement('input');
       fileInput.type = 'file';
       fileInput.accept = 'image/*';
@@ -72,7 +72,7 @@
         var formData = new FormData();
         formData.append('file', file);
         // Replace 'YOUR_UPLOAD_URL_HERE' with the actual server-side endpoint to handle file upload
-        var url = '/upload/?cp='+$("#code").val()+'&code_meli='+$("#code_meli").val()+'&btnType='+buttonType;
+        var url = '/upload/?cp='+$("#code").val()+'&code_meli='+$("#code_meli").val()+'&btnType='+buttonType+'&btnName='+btnName;
 
         var xhr = new XMLHttpRequest();
         xhr.open('POST', url, true);
@@ -140,6 +140,12 @@
 
       reader.readAsDataURL(file);
     }
+    //$(".remove-icon").on('click',function(){
+     //alert(1);
+    //});
+    var remove_img=function(){
+      alert($(this).attr('data-url'));
+    };
     function createPreview2(files) {
       
         var filePreviews = document.getElementById('filePreviews');
@@ -159,7 +165,10 @@
         // Create the remove icon
         var removeIcon = document.createElement('span');
         removeIcon.className = 'remove-icon';
-        removeIcon.innerHTML = '&times;';
+        removeIcon.onclick=remove_img;
+        removeIcon.setAttribute("data-url", files[i].id);
+        
+        removeIcon.innerHTML = '<a href="#">&times;</a>';
 
         // Append the image and remove icon to the container
         imageContainer.appendChild(imageElement);
@@ -218,7 +227,7 @@
       button.value = buttonsData[i].name;
       button.data_url=buttonsData[i].type;
       button.onclick = function() {
-        handleFileUpload(this.value,this.data_url);
+        handleFileUpload(this.value,this.data_url,this.value);
       };
 
       buttonsRow.appendChild(button);

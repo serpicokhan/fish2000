@@ -163,5 +163,6 @@ class PersonelFile(models.Model):
     msgFilePersonel=models.ForeignKey(Personnel, verbose_name="personel_file", on_delete=models.CASCADE,blank=True,null=True)
     msgFiledateAdded=models.DateTimeField(auto_now_add=True)
     msgFiledtype=models.IntegerField()
+    msgFileName=models.CharField(max_length=100,blank=True,null=True)
     class Meta:
         db_table="personelfile"

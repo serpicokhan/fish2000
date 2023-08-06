@@ -34,7 +34,7 @@ urlpatterns = [
     url(r'^personel/upload/$', insert_personel_data_from_csv, name='insert_personel_data_from_csv'),
     url(r'^personel/files/$', login_to_load_file, name='login_to_load_file'),
     url(r'^personel/$', list_personel, name='list_personel'),
-    url(r'^personel/profile$', view_profile, name='view_profile'),
+    url(r'^personel/(?P<id>\d+)/profile$', view_profile, name='view_profile'),
 
 
 ]
