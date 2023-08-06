@@ -26,13 +26,28 @@
   </div>
   <style>
     /* Custom CSS for image previews */
-    #filePreviews {
+    #filePreviews,#fileuploaded {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
     }
     .preview {
       max-width: 200px;
+    }
+    .image-container {
+      position: relative;
+      display: inline-block;
+    }
+    .remove-icon {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background-color: #fff;
+      color: #f00;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 7px;
     }
   </style>
   <!-- Bootstrap JS and jQuery -->
@@ -92,13 +107,33 @@
     // Function to create preview for each uploaded image
     function createPreview(file,buttonValue) {
       var reader = new FileReader();
-      reader.onload = function() {
-        var filePreviews = document.getElementById('filePreviews');
+      var filePreviews = document.getElementById('filePreviews');
+      var reader = new FileReader();
 
+      reader.onload = function (event) {
         var previewDiv = document.createElement('div');
         previewDiv.className = 'preview';
-        previewDiv.innerHTML = '<h5>'+ buttonValue + ' Image Preview:</h5>' +
-          '<img src="' + reader.result + '" class="img-thumbnail" style="max-width: 200px;">';
+
+        // Create the container for the image
+        var imageContainer = document.createElement('div');
+        imageContainer.className = 'image-container';
+        var imageElement = document.createElement('img');
+        imageElement.src = event.target.result;
+        imageElement.className = 'img-thumbnail';
+        imageElement.style.maxWidth = '200px';
+
+        // Create the remove icon
+        var removeIcon = document.createElement('span');
+        removeIcon.className = 'remove-icon';
+        removeIcon.innerHTML = '&times;';
+
+        // Append the image and remove icon to the container
+        imageContainer.appendChild(imageElement);
+        imageContainer.appendChild(removeIcon);
+
+        // Append the container to the preview div
+        previewDiv.innerHTML = '<h5>' + buttonValue + ' Image Preview:</h5>';
+        previewDiv.appendChild(imageContainer);
 
         filePreviews.appendChild(previewDiv);
       };
@@ -107,13 +142,32 @@
     }
     function createPreview2(files) {
       
-        var filePreviews = document.getElementById('fileuploaded');
+        var filePreviews = document.getElementById('filePreviews');
         for(i in files){
         console.log(files[i]);
         var previewDiv = document.createElement('div');
         previewDiv.className = 'preview';
-        previewDiv.innerHTML = '<h5>' + ' Image Preview:</h5>' +
-          '<img src="../media/' + files[i].msgFile + '" class="img-thumbnail" style="max-width: 200px;">';
+
+        // Create the container for the image
+        var imageContainer = document.createElement('div');
+        imageContainer.className = 'image-container';
+        var imageElement = document.createElement('img');
+        imageElement.src = '../media/'+files[i].msgFile;
+        imageElement.className = 'img-thumbnail';
+        imageElement.style.maxWidth = '200px';
+
+        // Create the remove icon
+        var removeIcon = document.createElement('span');
+        removeIcon.className = 'remove-icon';
+        removeIcon.innerHTML = '&times;';
+
+        // Append the image and remove icon to the container
+        imageContainer.appendChild(imageElement);
+        imageContainer.appendChild(removeIcon);
+
+        // Append the container to the preview div
+        previewDiv.innerHTML = '<h5>'  + ' Image Preview:</h5>';
+        previewDiv.appendChild(imageContainer);
 
         filePreviews.appendChild(previewDiv);
         }
