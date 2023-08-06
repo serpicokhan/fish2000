@@ -7,6 +7,7 @@
 
   <div class="container mt-5">
     <h2>بارگزاری مدارک</h2>
+    <div id="fileuploaded" class="mt-3"></div>
     <div class="row" id="buttonsRow">
       <!-- Buttons will be dynamically added here -->
     </div>
@@ -14,9 +15,14 @@
       <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
     </div>
     <input type="hidden" id="code" value='{{cp}}' />
+    
     <input type="hidden" id="code_meli" value='{{code_meli}}' />
+    <input type="hidden" id="file_types" value='{{file_types}}' />
+    <input type="hidden" id="files" value='{{files}}' />
+
     
     <div id="filePreviews" class="mt-3"></div>
+    
   </div>
   <style>
     /* Custom CSS for image previews */
@@ -84,7 +90,7 @@
     }
 
     // Function to create preview for each uploaded image
-    function createPreview(file, buttonValue) {
+    function createPreview(file,buttonValue) {
       var reader = new FileReader();
       reader.onload = function() {
         var filePreviews = document.getElementById('filePreviews');
@@ -98,6 +104,22 @@
       };
 
       reader.readAsDataURL(file);
+    }
+    function createPreview2(files) {
+      
+        var filePreviews = document.getElementById('fileuploaded');
+        for(i in files){
+        console.log(files[i]);
+        var previewDiv = document.createElement('div');
+        previewDiv.className = 'preview';
+        previewDiv.innerHTML = '<h5>' + ' Image Preview:</h5>' +
+          '<img src="../media/' + files[i].msgFile + '" class="img-thumbnail" style="max-width: 200px;">';
+
+        filePreviews.appendChild(previewDiv);
+        }
+      
+
+      
     }
 
     // Function to remove the button after upload
@@ -123,6 +145,15 @@
           { name: 'Button I',type:9 },
           { name: 'Button J',type:10 }
         ];
+    let valueString = $("#file_types").val();
+    let valueArray = JSON.parse(valueString.replace(/'/g, '"'));
+    //console.log(valueArray);
+    buttonsData = buttonsData.filter(button => !valueArray.some(valueItem => valueItem.msgFiledtype === button.type));
+    let valueStringfiles = $("#files").val();
+    let valueArrayfiles = JSON.parse(valueStringfiles.replace(/'/g, '"'));
+    //console.log(valueArrayfiles);
+    createPreview2(valueArrayfiles);
+
     // Create 10 buttons dynamically
     var buttonsRow = document.getElementById('buttonsRow');
     for (var i = 0; i < buttonsData.length; i++) {

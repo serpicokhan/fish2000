@@ -124,7 +124,11 @@ def login_to_load_file(request):
 def file_upload_doc(request):
         cp=request.POST.get('code',False)
         code_meli=request.POST.get('code_meli',False)
-        return render(request, 'myapp/files.html', {'cp':cp,'code_meli':code_meli})
+        p=Personnel.objects.get(NCode='{}'.format(code_meli))
+        p_files_type=PersonelFile.objects.filter(msgFilePersonel=p).values('msgFiledtype')
+        p_files=PersonelFile.objects.filter(msgFilePersonel=p).values('msgFile')
+        return render(request, 'myapp/files.html', {'cp':cp,'code_meli':code_meli,\
+                                                    'file_types':list(p_files_type),'files':list(p_files)})
 
 @csrf_exempt
 def handle_file_upload(request):
@@ -135,10 +139,8 @@ def handle_file_upload(request):
         code=request.GET.get("code",False)
         code_meli=request.GET.get("code_meli",False)
         btn_type=request.GET.get("btnType",False)
-        print(Personnel.objects.filter(NCode='{}'.format(code_meli)).query)
-        print('!!!!!!!!!!!!!!!!!!!!')
         p=Personnel.objects.get(NCode='{}'.format(code_meli))
-        print(code,code_meli)
+        
         # New directory where the files will be saved (named with the current date and time)
         # upload_directory = f'media/uploads/{current_datetime}/'
         # os.makedirs(upload_directory, exist_ok=True)
