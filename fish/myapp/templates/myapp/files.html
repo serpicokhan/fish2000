@@ -87,11 +87,14 @@
           progressBar.innerHTML = progress + '%';
         };
 
-        xhr.onload = function() {
+        xhr.onload = function(data) {
           progressBar.innerHTML = 'Upload complete!';
           progressBar.classList.remove('progress-bar-striped', 'progress-bar-animated');
-          createPreview(file, buttonValue);
+          return_data=JSON.parse(xhr.responseText);
+          createPreview(file, buttonValue,return_data.id);
           removeButton(buttonValue);
+          
+          
         };
 
         xhr.onerror = function() {
@@ -105,14 +108,14 @@
     }
 
     // Function to create preview for each uploaded image
-    function createPreview(file,buttonValue) {
+    function createPreview(file,buttonValue,file_id) {
       var reader = new FileReader();
       var filePreviews = document.getElementById('filePreviews');
       var reader = new FileReader();
 
       reader.onload = function (event) {
         var previewDiv = document.createElement('div');
-        previewDiv.className = 'preview';
+        previewDiv.className = 'col-lg-4';
 
         // Create the container for the image
         var imageContainer = document.createElement('div');
@@ -125,14 +128,18 @@
         // Create the remove icon
         var removeIcon = document.createElement('span');
         removeIcon.className = 'remove-icon';
-        removeIcon.innerHTML = '&times;';
+        
+        removeIcon.onclick=remove_img;
+        removeIcon.setAttribute("data-url", file_id);
+        
+        removeIcon.innerHTML = '<a href="#">&times;</a>';
 
         // Append the image and remove icon to the container
         imageContainer.appendChild(imageElement);
         imageContainer.appendChild(removeIcon);
 
         // Append the container to the preview div
-        previewDiv.innerHTML = '<h5>' + buttonValue + ' Image Preview:</h5>';
+        previewDiv.innerHTML = '<h5>' + buttonValue + ':</h5>';
         previewDiv.appendChild(imageContainer);
 
         filePreviews.appendChild(previewDiv);
@@ -144,7 +151,49 @@
      //alert(1);
     //});
     var remove_img=function(){
-      alert($(this).attr('data-url'));
+      //alert($(this).attr('data-url'));
+      const element =$(this);
+      const url=$(this).attr('data-url');
+      
+      return $.ajax({
+        url:`/personel/files/${url}/remove` ,
+        type: 'get',
+        dataType: 'json',
+        beforeSend: function () {
+         
+          
+        },
+        success: function (data) {
+          if(data.file_is_valied)
+          {
+            
+              element.parent().parent().remove();
+              var buttonsRow = document.getElementById('buttonsRow');
+              
+                var button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn btn-primary btn-block mr-2';
+                button.textContent = 'dsadsadas';
+                button.value = 'dsadsadsadsa';
+                button.data_url='dsdsadsasda';
+                button.onclick = function() {
+                handleFileUpload(this.value,this.data_url,this.value);
+                }
+              
+          
+                buttonsRow.appendChild(button);
+
+
+
+
+          }
+          else{
+
+          }
+  
+        }
+      });
+  
     };
     function createPreview2(files) {
       
@@ -152,7 +201,7 @@
         for(i in files){
         console.log(files[i]);
         var previewDiv = document.createElement('div');
-        previewDiv.className = 'preview';
+        previewDiv.className = 'col-lg-4';
 
         // Create the container for the image
         var imageContainer = document.createElement('div');
@@ -175,7 +224,7 @@
         imageContainer.appendChild(removeIcon);
 
         // Append the container to the preview div
-        previewDiv.innerHTML = '<h5>'  + ' Image Preview:</h5>';
+        previewDiv.innerHTML = '<h5>'  + files[i].msgFileName+' :</h5>';
         previewDiv.appendChild(imageContainer);
 
         filePreviews.appendChild(previewDiv);
@@ -199,7 +248,7 @@
     var buttonsData = [
           { name: 'صفحه اول شناسنامه',type:1 },
           { name: 'صفحه دوم شناسنامه',type:2 },
-          { name: 'صفحه انهایی شناسنامه',type:3 },
+          { name: 'صفحه انتهایی شناسنامه',type:3 },
           { name: 'صفحه اول شناسنامه همسر',type:4 },
           { name: 'صفحه اول شناسنامه فرزند',type:5 },
           { name: 'افزودن شناسنامه فرزند',type:6 },
@@ -211,7 +260,7 @@
     let valueString = $("#file_types").val();
     let valueArray = JSON.parse(valueString.replace(/'/g, '"'));
     //console.log(valueArray);
-    buttonsData = buttonsData.filter(button => !valueArray.some(valueItem => valueItem.msgFiledtype === button.type));
+    buttonsData1 = buttonsData.filter(button => !valueArray.some(valueItem => valueItem.msgFiledtype === button.type));
     let valueStringfiles = $("#files").val();
     let valueArrayfiles = JSON.parse(valueStringfiles.replace(/'/g, '"'));
     //console.log(valueArrayfiles);
@@ -219,13 +268,13 @@
 
     // Create 10 buttons dynamically
     var buttonsRow = document.getElementById('buttonsRow');
-    for (var i = 0; i < buttonsData.length; i++) {
+    for (var i = 0; i < buttonsData1.length; i++) {
       var button = document.createElement('button');
       button.type = 'button';
       button.className = 'btn btn-primary btn-block mr-2';
-      button.textContent = buttonsData[i].name;
-      button.value = buttonsData[i].name;
-      button.data_url=buttonsData[i].type;
+      button.textContent = buttonsData1[i].name;
+      button.value = buttonsData1[i].name;
+      button.data_url=buttonsData1[i].type;
       button.onclick = function() {
         handleFileUpload(this.value,this.data_url,this.value);
       };

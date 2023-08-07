@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^upload/$', handle_file_upload, name='handle_file_upload'),
     url(r'^file/$', file_upload_doc, name='file_upload_doc'),
     url(r'^personel/upload/$', insert_personel_data_from_csv, name='insert_personel_data_from_csv'),
+    url(r'^personel/files/(?P<id>\d+)/remove$', remove_person_file, name='remove_person_file'),
     url(r'^personel/files/$', login_to_load_file, name='login_to_load_file'),
     url(r'^personel/$', list_personel, name='list_personel'),
     url(r'^personel/(?P<id>\d+)/profile$', view_profile, name='view_profile'),

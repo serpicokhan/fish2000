@@ -31,7 +31,7 @@ def list_personel(request):
 
 
 def view_profile(request,id):
-    p=Personnel.objects.get(id=id)
+    p=Personnel.objects.get(PNumber=id)
     pics=PersonelFile.objects.filter(msgFilePersonel=p).values('msgFile','msgFileName')
     form=PersonelForm(instance=p)
     return render(request, 'myapp/personel/profile.html', {'form':form,'title':'فیش حقوقی',\
@@ -129,7 +129,7 @@ def file_upload_doc(request):
         code_meli=request.POST.get('code_meli',False)
         p=Personnel.objects.get(NCode='{}'.format(code_meli))
         p_files_type=PersonelFile.objects.filter(msgFilePersonel=p).values('msgFiledtype')
-        p_files=PersonelFile.objects.filter(msgFilePersonel=p).values('msgFile','id')
+        p_files=PersonelFile.objects.filter(msgFilePersonel=p).values('msgFile','id','msgFileName')
         return render(request, 'myapp/files.html', {'cp':cp,'code_meli':code_meli,\
                                                     'file_types':list(p_files_type),'files':list(p_files)})
 
@@ -152,10 +152,16 @@ def handle_file_upload(request):
         # with open(os.path.join(upload_directory, uploaded_file.name), 'wb+') as destination_file:
         #     for chunk in uploaded_file.chunks():
         #         destination_file.write(chunk)
-        PersonelFile.objects.create(msgFile=uploaded_file,msgFiledtype=btn_type,msgFilePersonel=p,msgFileName=btn_name)
+        p_file=PersonelFile.objects.create(msgFile=uploaded_file,msgFiledtype=btn_type,msgFilePersonel=p,msgFileName=btn_name)
 
-        return JsonResponse({'message': 'File uploaded successfully.', 'file_name': uploaded_file.name})
+        return JsonResponse({'message': 'File uploaded successfully.', 'file_name': uploaded_file.name,'id':p_file.id})
     else:
         return JsonResponse({'error': 'No file was uploaded.'})
 
-
+def remove_person_file(request,id):
+    file=PersonelFile.objects.get(id=id)
+    file.delete()
+    data=dict()
+    data['file_is_valied']=True
+    return JsonResponse(data)
+    
