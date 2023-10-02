@@ -27,6 +27,14 @@ class MessageForm(forms.ModelForm):
     class Meta:
         model = Message
         fields = '__all__'
+
+class HozurForm(forms.ModelForm):
+    name=forms.CharField(widget=forms.Textarea())
+   
+
+    class Meta:
+        model = HozurGhiab
+        fields = '__all__'
 class PersonelForm(forms.ModelForm):
 
     class Meta:
@@ -35,3 +43,6 @@ class PersonelForm(forms.ModelForm):
 
 class MessageForm(forms.Form):
     body = forms.CharField(widget=forms.Textarea())
+class LoginForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)

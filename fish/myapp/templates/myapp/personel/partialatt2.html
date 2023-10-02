@@ -1,0 +1,13 @@
+{% for personnel in personnel_list %}
+<tr data-url={{personnel.person.id}} class='data-row'>
+    <td>{{ personnel.person.FName }} {{personnel.person.LName}}</td>
+    <td>{{ personnel.person.PNumber }}</td>
+    <td><input type="checkbox" class='form-control row-checkbox' {% if personnel.hozur %} checked {%endif %} name="absent_{{ personnel.person.code }}"></td>
+    <td><input type="checkbox"  class='form-control row-checkbox' {% if personnel.estehghaghi %} checked {%endif %} name="estehghaghi_{{ personnel.person.code }}"></td>
+
+    <td><input type="checkbox"   class='form-control row-checkbox' {% if personnel.estelaji %} checked {%endif %} name="estelaji_{{ personnel.person.code }}"></td>
+   
+    <td><input type="text" class='form-control' name="in_time_{{ personnel.person.code }}"  value={{personnel.incom_time|time:'G:i:s'}}></td>
+    <td><input type="text" class='form-control' name="out_time_{{ personnel.person.code }}"  value={{personnel.outcome_time|time:'G:i:s'}}></td>
+</tr>
+{% endfor %}

@@ -23,11 +23,16 @@
     <link href="{% static 'vendor/jqvmap/css/jqvmap.min.css'%}" rel="stylesheet">
     <link href="{% static 'vendor/bootstrap-select/dist/css/bootstrap-select.min.css'%}" rel="stylesheet">
     <link href="{% static 'vendor/owl-carousel/owl.carousel.css'%}" rel="stylesheet">
+    <link href="{% static 'vendor/fullcalendar/css/fullcalendar.min.css' %}" rel="stylesheet" type="text/css"/>
     <link href="{% static '2.0/lineicons.css'%}" rel="stylesheet">
     <link href="{% static 'css/style.css'%}" rel="stylesheet">
     <link href="{% static 'vendor/dropzone/dist/dropzone.css' %}" rel="stylesheet" type="text/css"/>
     <script src="{% static 'js/jquery-2.1.1.js' %}"></script>
-     <script src="https://cdn.ckeditor.com/4.19.0/standard-all/ckeditor.js"></script>
+     <script src="'https://cdn.ckeditor.com/4.19.0/standard-all/ckeditor.js"></script>
+     <link href="{% static 'vendor/persianDatepicker/persianDatepicker.css'%}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'vendor/Persian-DateRangePicker-master/daterangepicker.css'%}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'vendor/Persian-DateRangePicker-master/datepicker-theme.css'%}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'vendor/JalaliDatePicker-main/jalalidatepicker.css'%}" rel="stylesheet" type="text/css"/>
 
 </head>
 <body>
@@ -172,6 +177,14 @@
 <script src="{% static 'vendor/owl-carousel/owl.carousel.js'%}"></script>
 <!-- Chart piety plugin files -->
 <script src="{% static 'vendor/peity/jquery.peity.min.js'%}"></script>
+
+<script src="{% static 'vendor/bootstrap-select/dist/js/bootstrap-select.min.js'%}" type="text/javascript"></script>
+<script src="{% static 'vendor/jqueryui/js/jquery-ui.min.js'%}" type="text/javascript"></script>
+<script src="{% static 'vendor/moment/moment.min.js'%}" type="text/javascript"></script>
+<script src="{% static 'vendor/fullcalendar/js/moment-jalaali.js'%}" type="text/javascript"></script>
+<script src="{% static 'vendor/fullcalendar/js/fullcalendar.min.js'%}" type="text/javascript"></script>
+<script src="{% static 'vendor/fullcalendar/js/locale-all.js'%}" type="text/javascript"></script>
+
 <!-- Dashboard 1 -->
 <script src="{% static 'js/dashboard/dashboard-1.js'%}"></script>
 <script src="{% static 'js/index_custom.min.js'%}" type="text/javascript"></script>
@@ -180,6 +193,14 @@
 <script src="{% static 'js/styleswitcher.js'%}"></script>
 <script src="{% static 'vendor/dropzone/dist/dropzone.js' %}" type="text/javascript"></script>
 
+{% comment %} <script src='https://unpkg.com/jalali-moment/dist/jalali-moment.browser.js'></script> {% endcomment %}
+<script src="{% static 'vendor/Persian-DateRangePicker-master/daterangepicker-fa-ex.js'%}" type="text/javascript"></script>
+<script src="{% static 'vendor/persianDatepicker/persianDatepicker.js'%}"></script>
+<script src="{% static 'vendor/pickadate/picker.js' %}" type="text/javascript"></script>
+<script src="{% static 'vendor/pickadate/picker.time.js' %}" type="text/javascript"></script>
+<script src="{% static 'vendor/pickadate/picker.date.js' %}" type="text/javascript"></script>
+{% block javascript %}
+{% endblock %}
 <script>
 
 

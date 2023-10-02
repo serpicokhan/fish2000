@@ -98,6 +98,8 @@ class UserFile(models.Model):
 
 
 class Personnel(models.Model):
+    manager=models.ForeignKey('SysUser',on_delete=models.SET_NULL,related_name='sarshift',null=True,blank=True)
+    saloon=models.ForeignKey('Asset',on_delete=models.SET_NULL,related_name='saloon',null=True,blank=True)
     Pid = models.IntegerField()
     PNumber = models.BigIntegerField()
     CpCode = models.IntegerField()
@@ -147,6 +149,10 @@ class Personnel(models.Model):
     CpCodeSanad = models.IntegerField(blank=True, null=True)
     WebPass = models.CharField(max_length=100, blank=True, null=True)
     TelegramNumber = models.CharField(max_length=11, blank=True, null=True)
+    Shift = models.CharField(max_length=2, blank=True, null=True)
+
+    
+
 
     def __str__(self):
         return f"{self.FName} {self.LName}"
@@ -166,3 +172,16 @@ class PersonelFile(models.Model):
     msgFileName=models.CharField(max_length=100,blank=True,null=True)
     class Meta:
         db_table="personelfile"
+class HozurGhiab(models.Model):
+    person=models.ForeignKey('Personnel',on_delete=models.CASCADE,related_name='person_hozur')
+    registerd_by=models.ForeignKey('SysUser',on_delete=models.SET_NULL,related_name='manager',null=True,blank=True)
+    incom_time = models.TimeField()
+    outcome_time = models.TimeField()
+    hdate = models.DateField(default=datetime.now().date())
+    registerd_date = models.DateTimeField(auto_now_add=True)
+    hozur = models.BooleanField(default=False)
+    estehghaghi = models.BooleanField(default=False)
+    estelaji = models.BooleanField(default=False)
+    class Meta:
+        db_table="hozurghiab"
+        unique_together = ('person', 'hdate',)

@@ -1,5 +1,58 @@
 ! function(e) {
     "use strict";
+    var init_data=null;
+    var dts=null;
+    var read_calendar_data=function(){
+        // $.ajax({
+        //     url
+        // });
+        // console.log($('.input-daterange-datepicker').val());
+        const date_range=$('.input-daterange-datepicker').val();
+        $.ajax({
+            url:'/Hozur/GetInfo?q='+date_range,
+            method:'get',
+            success:function(doc){
+                var events=[];
+                console.log(doc);
+                if (doc != null) {
+                    var i=null;
+                for(i in doc){
+                    // console.log(i);
+                    if(doc[i].start){
+                        console.log(doc[i].start,new Date(doc[i].start));
+                        var dt=new Date(doc[i].start);
+                  events.push({
+                    id:doc[i].id,
+                    title: 'برنامه',
+                    start: dt,
+                    className:doc[i].className
+  
+                    // end: doc.to_date
+                  });
+                }
+                }
+            }
+                // var a2=[data.i];
+                var a = [{
+                    title: "برنامه نویسی",
+                    start: new Date(e.now() + 158e6),
+                    className: "bg-dark"
+                }];
+                
+                $("#calendar").fullCalendar('removeEvents');
+                $("#calendar").fullCalendar('addEventSource', events);
+                
+
+            }
+        });
+
+    }
+    $('.view_info').click(function(){
+        
+        read_calendar_data();
+
+    });
+   
     var t = function() {
         this.$body = e("body"), this.$modal = e("#event-modal"), this.$event = "#external-events div.external-event", this.$calendar = e("#calendar"), this.$saveCategoryBtn = e(".save-category"), this.$categoryForm = e("#add-category form"), this.$extEvents = e("#external-events"), this.$calendarObj = null
     };
@@ -9,19 +62,34 @@
             i = e.extend({}, a);
         i.start = n, o && (i.className = [o]), this.$calendar.fullCalendar("renderEvent", i, !0), e("#drop-remove").is(":checked") && t.remove()
     }, t.prototype.onEventClick = function(t, n, a) {
-        var o = this,
-            i = e("<form></form>");
-        i.append("<label>Change event name</label>"), i.append("<div class='input-group'><input class='form-control' type=text value='" + t.title + "' /><span class='input-group-btn'><button type='submit' class='btn btn-success waves-effect waves-light'><i class='fa fa-check'></i> Save</button></span></div>"), o.$modal.modal({
-            backdrop: "static"
-        }), o.$modal.find(".delete-event").show().end().find(".save-event").hide().end().find(".modal-body").empty().prepend(i).end().find(".delete-event").unbind("click").on("click", function() {
-            o.$calendarObj.fullCalendar("removeEvents", function(e) {
-                return e._id == t._id
-            }), o.$modal.modal("hide")
-        }), o.$modal.find("form").on("submit", function() {
-            return t.title = i.find("input[type=text]").val(), o.$calendarObj.fullCalendar("updateEvent", t), o.$modal.modal("hide"), !1
-        })
+        // var o = this,
+
+        //     i = e("<form></form>");
+        //     alert(123);
+            console.log(t.id,t.start._i,t);
+        // i.append("<label>Change event name</label>"), i.append("<div class='input-group'><input class='form-control' type=text value='" + t.title + "' /><span class='input-group-btn'><button type='submit' class='btn btn-success waves-effect waves-light'><i class='fa fa-check'></i> Save</button></span></div>"), o.$modal.modal({
+        //     backdrop: "static"
+        // }), o.$modal.find(".delete-event").show().end().find(".save-event").hide().end().find(".modal-body").empty().prepend(i).end().find(".delete-event").unbind("click").on("click", function() {
+        //     o.$calendarObj.fullCalendar("removeEvents", function(e) {
+        //         return e._id == t._id
+        //     }), o.$modal.modal("hide")
+        // }), o.$modal.find("form").on("submit", function() {
+        //     return t.title = i.find("input[type=text]").val(), o.$calendarObj.fullCalendar("updateEvent", t), o.$modal.modal("hide"), !1
+        // })
+        $.ajax({
+            url:`/Hozur/GetDetails?id=${t.id}&hdate=${t.start.toISOString().split('T')[0]}`,
+            beforeSend:function(){
+                $("#event-modal").modal({backdrop: 'static', keyboard: false});
+            },
+            success:function(data){
+                console.log(data);
+                $("#tbody-company").html(data.html_hozur_data);
+            }
+        });
     }, t.prototype.onSelect = function(t, n, a) {
         var o = this;
+        console.log(t,n,a);
+        alert('select');
         o.$modal.modal({
             backdrop: "static"
         });
@@ -84,7 +152,7 @@
                 center: "title",
                 right: "month,agendaWeek,agendaDay"
             },
-            events: a,
+            
             editable: !0,
             droppable: !0,
             eventLimit: !0,

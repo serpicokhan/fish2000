@@ -44,7 +44,7 @@ $(function () {
 
 
   };
-  //$("#modal-company").on("submit", ".js-company-create-form",
+  
 
   // $("#modal-shekayat").on("click", ".view_shekayat", view_shekayat);
   });

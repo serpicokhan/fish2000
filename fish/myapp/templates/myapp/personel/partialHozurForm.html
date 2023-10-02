@@ -1,0 +1,45 @@
+
+
+<div class="container mt-4 main-container">
+    <h3>یک نفر را انتخاب کنید</h3>
+    <input type="text" id="chip-search" class="form-control mb-3" placeholder="Search for a chip">
+    
+    {% for chip in chips %}
+      <a href="#" class="list-group-item list-group-item-action selectable-chip" data-id='{{chip.id}}' data-url='{{chip.PNumber}} ' data-chip-name="{{ chip.id }} {{ chip.FName }} {{chip.LName}}">{{ chip.FName }} {{chip.LName}}</a>
+
+      {% endfor %}
+  </div>
+  <style>
+    .main-container {
+        direction:rtl;
+        max-height: 400px; /* Adjust the height as needed */
+        overflow-y: auto;
+        display: inline-block;
+         margin: 4px; /* Adjust the margin as needed for spacing between chips */
+      cursor: pointer;
+      }
+    /* Custom CSS for selectable chips */
+    .selectable-chip {
+        cursor: pointer;
+        white-space: nowrap; 
+    }
+    
+    .selectable-chip.active {
+        background-color: #007bff;
+        color: #fff;
+      }
+      .selectable-chip.active::before {
+        content: "\2713"; /* Unicode checkmark character */
+        color: green;
+        margin-left: 5px;
+      }
+    .saved-chip {
+        background-color: #28a745; /* Green background for saved chip */
+        color: #fff;
+        display: inline-block;
+        padding: 3px 10px;
+        margin-right: 5px;
+      }
+  </style>
+
+
