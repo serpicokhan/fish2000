@@ -1,6 +1,6 @@
 import csv
 from datetime import datetime
-from myapp.models import Personnel,PersonelFile,HozurGhiab,SysUser  # Replace 'myapp' with the name of your Django app
+from myapp.models import Personnel,PersonelFile,HozurGhiab,SysUser,Asset  # Replace 'myapp' with the name of your Django app
 from django.shortcuts import render
 from django.core.paginator import *
 from django.http import JsonResponse
@@ -19,10 +19,13 @@ from django.template.loader import render_to_string
 import json
 from myapp.business.DateJob import *
 from django.db import IntegrityError
+from django.contrib.auth.models import User,Group
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import permission_required
 
 def doPaging(request,books):
     page=request.GET.get('page',1)
-    paginator = Paginator(books, 5)
+    paginator = Paginator(books, 10)
     wos=None
     try:
         wos=paginator.page(page)
@@ -31,19 +34,26 @@ def doPaging(request,books):
     except EmptyPage:
         wos = paginator.page(paginator.num_pages)
     return wos
+@permission_required('myapp.view_personnnel')
 def list_personel(request):
     books=Personnel.objects.all()
     wos=doPaging(request,(books))
+    group = Group.objects.get(name='manager')
+    asset=Asset.objects.all()
+
+# Get all users belonging to the group
+    users_in_group = group.user_set.all()
+    users=SysUser.objects.filter(userId__in=users_in_group).order_by('fullName')
 
 
-    return render(request, 'myapp/personel/personelList.html', {'fishes': wos,'title':'مشخصات','section':'list_personel'})
+    return render(request, 'myapp/personel/personelList.html', {'fishes': wos,'title':'مشخصات','section':'list_personel','manager':users,'asset':asset})
 
-
+@permission_required('myapp.view_personnnel')
 def view_profile(request,id):
-    p=Personnel.objects.get(PNumber=id)
+    p=Personnel.objects.get(id=id)
     pics=PersonelFile.objects.filter(msgFilePersonel=p).values('msgFile','msgFileName')
     form=PersonelForm(instance=p)
-    return render(request, 'myapp/personel/profile.html', {'form':form,'title':'فیش حقوقی',\
+    return render(request, 'myapp/personel/profile.html', {'form':form,'title':'پروفایل',\
                                                            'section':'view_profile','pics':list(pics)})
 
 def convert_to_int(value):
@@ -83,7 +93,7 @@ def insert_personel_data_from_csv(request):
             print(row['\ufeffPid'])
             personnel = Personnel(
                 Pid=row['\ufeffPid'],
-                PNumber=int(row['PNumber']),
+                PNumber=(row['PNumber']),
                 CpCode=int(row['CpCode']),
                 BranchCode=int(row['BranchCode']),
                 CardNo=(row['CardNo']),
@@ -143,7 +153,15 @@ def file_upload_doc(request):
         p_files=PersonelFile.objects.filter(msgFilePersonel=p).values('msgFile','id','msgFileName')
         return render(request, 'myapp/files.html', {'cp':cp,'code_meli':code_meli,\
                                                     'file_types':list(p_files_type),'files':list(p_files)})
-
+def update_personel(request,id):
+    company= get_object_or_404(Personnel, id=id)
+    template=""
+    if (request.method == 'POST'):
+        form = PersonelForm(request.POST, instance=company)
+        if(form.is_valid):
+            form.save()
+            return list_personel(request)
+   
 @csrf_exempt
 def handle_file_upload(request):
 
@@ -182,7 +200,7 @@ def view_att(request):
         manager=SysUser.objects.get(userId=request.user)
         users=HozurGhiab.objects.filter(hdate=datetime.datetime.now().date(),registerd_by=manager)
         if(users.count()>0):
-            return render(request, 'myapp/personel/att2.html', {'user':manager,'personnel_list': users,'title':'مشخصات','section':'list_personel'})
+            return render(request, 'myapp/personel/try_tommarow.html', {'user':manager,'personnel_list': users,'title':'مشخصات','section':'list_personel'})
         else:
             print(request.method)
             user_name=request.user
@@ -222,9 +240,6 @@ def save_personel_att(request):
         registerd_user=SysUser.objects.get(userId=request.user)
         print("********")
         for i in data:
-            print(i['name'])
-            print(i['number'])
-            print(DateJob.getTaskDate(i['hdate']))
             person=Personnel.objects.get(id=int(i['id']))
             hdate=DateJob.getTaskDate(i['hdate'])
             
@@ -233,7 +248,7 @@ def save_personel_att(request):
                                         incom_time=i['inTimeValue'],outcome_time=i['outTimeValue'],\
                                         hdate=hdate,hozur=i['absentChecked'],\
                                         estehghaghi=i['estehghaghiChecked'],estelaji=i['estelajiChecked'],\
-                                            registerd_by=registerd_user)
+                                            registerd_by=registerd_user,title=i['title2'])
             except IntegrityError as e:
                 o=HozurGhiab.objects.get(person=person,hdate=hdate)
                 o.incom_time=i['inTimeValue']
@@ -242,6 +257,7 @@ def save_personel_att(request):
                 o.hozur=i['absentChecked']
                 o.estehghaghi=i['estehghaghiChecked']
                 o.estelaji=i['estelajiChecked']
+                o.title=int(i['title2'])
                 o.registerd_by=registerd_user
                 o.save()
                 
@@ -300,35 +316,144 @@ def save_hozur_form(request, form, template_name,reg_date):
             data['form_is_valid'] = False
             print(form.errors)
 
-    chips = Personnel.objects.exclude(manager__userId=request.user)
+    
+    saloon_id=Personnel.objects.filter(manager__userId=request.user).first().saloon
+    chips = Personnel.objects.exclude(manager__userId=request.user).filter(saloon=saloon_id)
     context = {'form': form ,'chips': chips}
 
 
     data['html_hozur_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
 ##########################################################
+@permission_required('myapp.view_personnnel')
 def show_hozur_calendar(request):
     user=SysUser.objects.all()
     return render(request,'myapp/personel/admin_hozur_list.html',{'user':user})
 def get_personel_calendar_info(request):
     data=[]
-    user_info=HozurGhiab.objects.values_list('registerd_by','hdate').distinct()
+    manager=request.GET.get('manager',False)
+    print(manager,'manager')
+    user_info=HozurGhiab.objects.filter(registerd_by=manager).values_list('registerd_by','hdate').distinct()
     for i in user_info:
-        data.append({'title': "برنامه نویسی",\
-                'start': i[1],\
-                'className': "bg-dark",\
+        data.append({'title': " حضور غیاب",\
+                'start': '{} 10:00:00'.format(i[1]),\
+                'className': "bg-primary",\
                 'id':i[0]})
     
     return JsonResponse(data,safe=False)
+@permission_required('myapp.view_personnnel')
 def get_hozur_list_detail(request):
     data=dict()
     manager=request.GET.get('id',False)
     hdate=request.GET.get('hdate',False)
     if(hdate and manager):
-        user_list_raw=HozurGhiab.objects.filter(registerd_by=manager,hdate=hdate)
+        user_list_raw=HozurGhiab.objects.filter(registerd_by=manager,hdate=hdate).order_by('person__LName')
         user_list=[]
-        
-        data['html_hozur_data']=  render_to_string('myapp/personel/partialatt2.html', {
-                'personnel_list': user_list_raw
+        date_obj = datetime.datetime.strptime(hdate, "%Y-%m-%d")
+        jalali_date=jdatetime.date.fromgregorian(date=date_obj)
+        formatted_date = f"{jalali_date.year:04d}/{jalali_date.month:02d}/{jalali_date.day:02d}"
+
+
+    return render(request,'myapp/personel/hozurdetaillist.html',{'personnel_list': user_list_raw,'date':formatted_date})
+
+
+
+def save_Personel_form(request,form,template):
+    pass
+@permission_required('myapp.view_personnnel')
+def personel_create(request):
+    if (request.method == 'POST'):
+        form = PersonelForm(request.POST)
+        if(form.is_valid()):
+            form.save()
+            return list_personel(request)
+    else:
+
+        form = PersonelForm()
+        return render(request,'myapp/personel/new_profile.html',{'form':form})
+        # return save_Personel_form(request, form, 'cmms/maintenancetype/partialMaintenanceTypeCreate.html')
+
+def get_manager_by_makan(request):
+    asset=request.GET.get("q",False)
+    if(asset):
+        data=dict()
+        ps=Personnel.objects.filter(saloon__id=asset).distinct()
+        data['result'] = render_to_string('myapp/personel/partialmanagername.html', {
+                'personnel_list': ps
             })
-    return JsonResponse(data,safe=False)
+        return JsonResponse(data)
+@csrf_exempt
+def delete_personel(request,id):
+        if(request.method=="POST"):
+            p1=Personnel.objects.get(id=id)
+            p1.delete()
+            data=dict()
+            data["valid"]=True
+            return JsonResponse(data)
+def search_personel(request):
+    q=request.GET.get("q",False)
+    # books=Personnel.objects.all()
+    # wos=doPaging(request,(books))
+    names = q.split()
+    
+    group = Group.objects.get(name='manager')
+    asset=Asset.objects.all()
+    users_in_group = group.user_set.all()
+    users=SysUser.objects.filter(userId__in=users_in_group).order_by('fullName')
+    data=dict()
+    if(q and len(names)==1):
+    #   
+        books=Personnel.objects.filter(Q(FName__contains=q)|Q(LName__contains=q)|Q(PNumber=q)|Q(NCode=q))
+        wos=doPaging(request,(books))
+    elif(q and len(names)>1):
+        first_name, last_name = names
+        books=Personnel.objects.filter(Q(FName__contains=first_name) & Q(LName__contains=last_name))
+        print(Personnel.objects.filter(Q(FName__contains=first_name) & Q(LName__contains=last_name)).query)
+        wos=doPaging(request,(books))
+
+
+        
+
+   
+    return render(request,'myapp/personel/personelList.html',{'fishes':wos,'title':'مشخصات','section':'list_personel','manager':users,'asset':asset,'q':q})
+def getTitle(request):
+    choices=[
+            (0, 'سرشیفت'),
+            (1, 'مقدمات'),
+            (2, 'پاساژ'),
+            (3, 'فبنیشر'),
+            (4, 'سردافر'),
+            (5, 'رینگ'),
+            (6, 'لاکنی'),
+            (7, 'دولاتاب'),
+            (8, 'اتوکنر'),
+            (9, 'خدمات'),
+            (10, 'ssm'),
+            (11, 'هیت ست'),
+            (12, 'تاپس'),
+            (13, 'سرپرست'),
+            (14, 'آزمایشگاه'),
+            (15, 'رنگکشی'),
+            (16, 'آبگیر'),
+            (17, 'کوب'),
+            (18, 'رزرو دیگ'),
+            (19, 'استلام'),
+            (20, 'کوب کوچک'),
+            (21, 'لیفتراک'),
+            (22, 'پرس ضایعات'),
+            (23, 'پرس و خشک کن'),
+            (24, 'لیفتراک ریسندگی'),
+            (25, 'کاردینگ'),
+            (26, 'ریبریکر'),
+      
+
+
+            
+        ]
+    data=dict()
+    sorted_choices = sorted(choices, key=lambda x: x[1])
+    data['html_hozur_form']=render_to_string('myapp/personel/partialTitle.html',{'chips':sorted_choices})
+    return JsonResponse(data)
+     
+def show_hozur_success(request):
+    return render(request,'myapp/personel/save_msg.html')

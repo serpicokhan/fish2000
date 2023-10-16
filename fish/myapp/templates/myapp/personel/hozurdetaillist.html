@@ -1,0 +1,67 @@
+<!--pip install django-widget-tweaks-->
+{% extends 'myapp/index.html' %}
+{% block style %}
+@media print {
+    body * {
+        display: none;
+    }
+    table {
+        display: table;
+    }
+}
+{% endblock%}
+ {% block content %}
+{% load static %}
+<div class="row">
+  
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">جدول حضور غیاب {{date}}</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-responsive-sm">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>نام</th>
+                            <th>کد</th>
+                            <th>سمت</th>
+                            <th>حضور</th>
+                            <th>استحقاقی</th>
+                            <th>استعلاجی</th>
+
+                            <th>ورود</th>
+                            <th>خروج</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                       {% include 'myapp/personel/partialhozurdetailist.html' %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}
+{% block javascript %}
+<script>
+    $(document).ready(function () {
+        $("#main_search").on("keyup", function () {
+            var searchText = $(this).val().toLowerCase();
+
+            $(".data-row").each(function () {
+                var rowData = $(this).text().toLowerCase();
+                if (rowData.indexOf(searchText) === -1) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

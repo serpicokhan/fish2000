@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حضور غیاب روزانه</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="http://babakhani.github.io/PersianWebToolkit/doc/lib/persian-datepicker/dist/css/persian-datepicker.css">
+    <link rel="stylesheet" href="{% static 'css/persian-datepicker.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body{
@@ -23,10 +23,8 @@
             <div class="form-inline">
                 <div class="form-group mb-2">
                     <label for="selected_date">انتخاب تاریخ</label>
-                    <input type="text" class="form-control normal-example" id="selected_date" required>
                 </div>
               
-                <button type="submit" class="btn btn-primary mb-2">تایید</button>
             </div>
             <div class="form-group">
                
@@ -34,11 +32,13 @@
             </div>
             <div class='form-group'>
                 <div class="input-group-append d-flex justify-content-center">
+                    <input type="text" class="form-control normal-example" id="selected_date" required readonly>
+
                     <button id="nextBtn" class="btn btn-primary mx-1" style='background-color: #E8EAF6;
-                    color: black;'>شیفت صبح</button>
+                    color: black;'> صبح</button>
                     <button id="button2" class="btn btn-secondary mx-1" style='background-color:#3F51B5
-                    '>شیفت بعد از ظهر</button>
-                    <button id="button3" class="btn btn-info mx-1" style='background-color:#1A237E'>شیفت شب</button>
+                    '>ظهر</button>
+                    <button id="button3" class="btn btn-info mx-1" style='background-color:#1A237E'> شب</button>
                 </div>
             </div>
             
@@ -54,12 +54,14 @@
                             <tr>
                                 <th>نام</th>
                                 <th>کد</th>
+                                <th>سمت</th>
                                 <th>حضور</th>
                                 <th>استحقاقی</th>
                                 <th>استعلاجی</th>
     
                                 <th>ورود</th>
                                 <th>خروج</th>
+                                
                             </tr>
                         </thead>
                         <tbody id='tbody-company'> 
@@ -101,9 +103,9 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     
-    <script src="http://babakhani.github.io/PersianWebToolkit/doc/lib/persian-date/dist/persian-date.js"></script>
+    <script src="{% static 'js/project/calendar/persian-date.js' %}"></script>
       
-    <script src="http://babakhani.github.io/PersianWebToolkit/doc/lib/persian-datepicker/dist/js/persian-datepicker.js"></script>
+    <script src="{% static 'js/project/calendar/persian-datepicker.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{% static 'js/project/att.js'  %}" ></script>

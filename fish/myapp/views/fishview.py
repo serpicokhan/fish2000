@@ -33,7 +33,7 @@ from django.db.models import Q
 import os
 from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt
-
+from django.contrib.auth.decorators import permission_required
 def doPaging(request,books):
     page=request.GET.get('page',1)
     paginator = Paginator(books, 8)
@@ -47,6 +47,7 @@ def doPaging(request,books):
     return wos
 
 @login_required
+@permission_required('myapp.view_fish')
 def list_fish(request):
     #
     books=Fish.objects.all()
@@ -166,6 +167,7 @@ def fish_upload(request):
         return JsonResponse(data)
         # return HttpResponse('')
     return JsonResponse({'post':'fasle'})
+@permission_required('myapp.view_fish')
 def fish_create(request):
     if (request.method == 'POST'):
 

@@ -1,8 +1,8 @@
 <!--pip install django-widget-tweaks-->
 {% extends 'myapp/index.html' %}
+{% load static %}
 
  {% block content %}
-{% load static %}
 <div class="page-titles">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="javascript:void(0)">کارتابل</a></li>
@@ -22,7 +22,7 @@
                                                name="daterange" value="">
                         </div>
                         <p>سر شیفت را انتخاب کنید</p>
-                        <select class='form-control mb-6'>
+                        <select class='form-control mb-6 ' id='manager_list'>
                             
                             {% for i in user %}
                             <option value='{{i.id}}'>{{i.fullName}}</option>
@@ -131,9 +131,10 @@
 
 
 
-          
+
 {% endblock %}
-{% block javascript %}
+{% load static %}
+{% block myscript %}
 <script src="{% static 'js/plugins-init/fullcalendar-init.js'%}" type="text/javascript"></script>
 <script src="{% static 'js/plugins-init/bs-daterange-picker-init.js'%}" type="text/javascript"></script>
   

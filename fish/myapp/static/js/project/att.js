@@ -34,18 +34,22 @@ var senddata=function(){
         // Iterate through each <tr> element with the class "data-row"
         $('.data-row').each(function() {
             var $tds = $(this).find('td'); // Get all <td> elements in the current <tr>
-            
+            var id_=$(this).attr('data-url');
             // Create an object to store the data for this row
             var rowData = {
+                title2: $('label[name="titletxt"]', this).attr('data-val'), // Get the value of the "out_time_" input
                 id:$(this).attr('data-url'),
                 hdate:$('#selected_date').val(),
                 name: $tds.eq(0).text(), // Get the content of the first <td>
                 number: $tds.eq(1).text(), // Get the content of the second <td>
-                absentChecked: $('input[name="absent_"]', this).is(':checked'), // Check the status of the "absent_" checkbox
-                estehghaghiChecked: $('input[name="estehghaghi_"]', this).is(':checked'), // Check the status of the "estehghaghi_" checkbox
-                estelajiChecked: $('input[name="estelaji_"]', this).is(':checked'), // Check the status of the "estelaji_" checkbox
+                absentChecked: $(`input[name="absent_${id_}"]`, this).is(':checked'), // Check the status of the "absent_" checkbox
+                estehghaghiChecked: $(`input[name="estehghaghi_${id_}"]`, this).is(':checked'), // Check the status of the "estehghaghi_" checkbox
+                estelajiChecked: $(`input[name="estelaji_${id_}"]`, this).is(':checked'), // Check the status of the "estelaji_" checkbox
                 inTimeValue: $('input[name="in_time_"]', this).val(), // Get the value of the "in_time_" input
-                outTimeValue: $('input[name="out_time_"]', this).val() // Get the value of the "out_time_" input
+                outTimeValue: $('input[name="out_time_"]', this).val(), // Get the value of the "out_time_" input
+
+
+
             };
             
             // Push the rowData object into the dataArray
@@ -66,12 +70,7 @@ var senddata=function(){
                 if (data.form_is_valid) {
                     //alert("taskGroup created!");  // <-- This is just a placeholder for now for testing
                     toastr.success('دریافت اطلاعات با موفقیت انجام شد');
-                   // $("#tbody_purchaseRequest").empty();
-                    //$("#tbody_purchaseRequest").html(data.html_purchaseRequest_list);
-            
-            
-                    // $("#modal-taskGroup").modal("hide");
-                   // console.log(data.html_taskGroup_list);
+                    window.location='/Hozur/Success';
                   }
                   else {
                         toastr.error('لطفا مجدد تلاش فرمایید!');
@@ -139,7 +138,7 @@ $('#btn-send').on('click',senddata);
         $("input[name^='in_time_']").val("22:00");
         $("input[name^='out_time_']").val("06:00");
     });
-    
+    var clicked_element=null;
 
     $("#attendanceForm").submit(function(e) {
         e.preventDefault();
@@ -171,7 +170,38 @@ $('#btn-send').on('click',senddata);
           });
        
       });
+      $("#tbody-company").on("click",".titletxt",function(){
+        clicked_element=$(this).closest('tr').data('url');
+        return $.ajax({
+          url: $(this).attr("data-url"),
+          type: 'get',
+          dataType: 'json',
+          beforeSend: function () {
+    
+            $("#modal-company").modal({backdrop: 'static', keyboard: false});
+    
+          },
+          success: function (data) {
+    
+            $("#modal-company .modal-content").html(data.html_hozur_form);
+           
+          }
+    
+        });
+      });
       $("#modal-company").on("input","#chip-search", function() {
+        var searchTerm = $(this).val().toLowerCase();
+        
+        $(".selectable-chip").each(function() {
+          var chipName = $(this).data("chip-name").toString().toLowerCase();
+          if (chipName.includes(searchTerm)) {
+            $(this).show();
+          } else {
+            $(this).hide();
+          }
+        });
+      });
+      $("#modal-company").on("input","#chip-search-title", function() {
         var searchTerm = $(this).val().toLowerCase();
         
         $(".selectable-chip").each(function() {
@@ -200,21 +230,48 @@ $('#btn-send').on('click',senddata);
         //   }
         // }
       });
+      
       $("#modal-company").on('click','.js-add-to-table',function(){
 
         var datas=selectedChip.split(' ');
         $("#tbody-company").append(`<tr data-url=${selectedId} class="data-row">
         <td> ${datas[1]} ${datas[2]}</td>
         <td>${datas[0]}</td>
-        <td><input type="checkbox" class="form-control row-checkbox" checked="" name="absent_"></td>
-        <td><input type="checkbox" class="form-control row-checkbox" name="estehghaghi_"></td>
-
-        <td><input type="checkbox" class="form-control row-checkbox" name="estelaji_"></td>
+        <td><label class="form-control titletxt" data-url="/Hozur/GetTitles/">سرشیفت</label></td>
+        <td>
+          <div class="custom-control custom-checkbox checkbox-success check-lg mr-3">
+          <input type="checkbox" class="custom-control-input row-checkbox" checked name="absent_${selectedId}">
+          <label class="custom-control-label" for="absent_${selectedId}"></label>
+          </div>
+        </td>
+        <td>
+        <div class="custom-control custom-checkbox checkbox-success check-lg mr-3">
+        <input type="checkbox" class="custom-control-input row-checkbox" name="estehghaghi_${selectedId}">
+        <label class="custom-control-label" for="estehghaghi_${selectedId}"></label>
+        </div>
+        </td>
+        <td>
+        <div class="custom-control custom-checkbox checkbox-success check-lg mr-3">
+        <input type="checkbox" class="custom-control-input row-checkbox" name="estelaji_${selectedId}">
+        <label class="custom-control-label" for="estelaji_${selectedId}"></label>
+        </div>
+        </td>
+       
 
         <td><input type="time" name="in_time_" step="60"></td>
         <td><input type="time" name="out_time_" step="60"></td>
     </tr>`);
     $("#modal-company").modal("hide");
+
+      });
+      $("#modal-company").on('click','.js-title-to-table',function(){
+        console.log(clicked_element);
+        var $trToFind = $("tr[data-url='" + clicked_element + "']");
+        var $label = $trToFind.find("label.titletxt");
+        $label.html(selectedChip.split(' ')[1]);
+        $label.attr('data-val',selectedChip.split(' ')[0]);
+        
+        $("#modal-company").modal("hide");
 
       });
       $("#modal-company").on("click",'selectable-chip', function() {
@@ -228,4 +285,6 @@ $('#btn-send').on('click',senddata);
         // Display the selected chip in the "Saved Chip" area
         $("#selected-chip").html('<span class="saved-chip">' + $(this).data("chip-name") + '</span>');
       });
+    
+    
 });

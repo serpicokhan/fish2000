@@ -39,7 +39,8 @@ class PersonelForm(forms.ModelForm):
 
     class Meta:
         model = Personnel
-        fields = '__all__'
+        # fields = '__all__'
+        fields = ['manager', 'saloon','PNumber','FName','LName','NCode','Father','title']
 
 class MessageForm(forms.Form):
     body = forms.CharField(widget=forms.Textarea())

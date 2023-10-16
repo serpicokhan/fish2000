@@ -8,8 +8,10 @@
         // });
         // console.log($('.input-daterange-datepicker').val());
         const date_range=$('.input-daterange-datepicker').val();
+        const manager=$('#manager_list').val();
+
         $.ajax({
-            url:'/Hozur/GetInfo?q='+date_range,
+            url:`/Hozur/GetInfo?q=${date_range}&manager=${manager}`,
             method:'get',
             success:function(doc){
                 var events=[];
@@ -76,16 +78,17 @@
         // }), o.$modal.find("form").on("submit", function() {
         //     return t.title = i.find("input[type=text]").val(), o.$calendarObj.fullCalendar("updateEvent", t), o.$modal.modal("hide"), !1
         // })
-        $.ajax({
-            url:`/Hozur/GetDetails?id=${t.id}&hdate=${t.start.toISOString().split('T')[0]}`,
-            beforeSend:function(){
-                $("#event-modal").modal({backdrop: 'static', keyboard: false});
-            },
-            success:function(data){
-                console.log(data);
-                $("#tbody-company").html(data.html_hozur_data);
-            }
-        });
+        // $.ajax({
+        //     url:`/Hozur/GetDetails?id=${t.id}&hdate=${t.start.toISOString().split('T')[0]}`,
+        //     beforeSend:function(){
+        //         $("#event-modal").modal({backdrop: 'static', keyboard: false});
+        //     },
+        //     success:function(data){
+        //         console.log(data);
+        //         $("#tbody-company").html(data.html_hozur_data);
+        //     }
+        // });
+        window.open(`/Hozur/GetDetails?id=${t.id}&hdate=${t.start.toISOString().split('T')[0]}`, "_blank");
     }, t.prototype.onSelect = function(t, n, a) {
         var o = this;
         console.log(t,n,a);

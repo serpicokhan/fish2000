@@ -100,10 +100,10 @@ class UserFile(models.Model):
 class Personnel(models.Model):
     manager=models.ForeignKey('SysUser',on_delete=models.SET_NULL,related_name='sarshift',null=True,blank=True)
     saloon=models.ForeignKey('Asset',on_delete=models.SET_NULL,related_name='saloon',null=True,blank=True)
-    Pid = models.IntegerField()
-    PNumber = models.BigIntegerField()
-    CpCode = models.IntegerField()
-    BranchCode = models.IntegerField()
+    Pid = models.IntegerField(null=True,blank=True)
+    PNumber = models.CharField(max_length=50, blank=True, null=True)
+    CpCode = models.IntegerField(null=True,blank=True)
+    BranchCode = models.IntegerField(null=True,blank=True)
     CardNo = models.IntegerField(blank=True, null=True)
     FName = models.CharField(max_length=40, blank=True, null=True)
     LName = models.CharField(max_length=50, blank=True, null=True)
@@ -150,6 +150,43 @@ class Personnel(models.Model):
     WebPass = models.CharField(max_length=100, blank=True, null=True)
     TelegramNumber = models.CharField(max_length=11, blank=True, null=True)
     Shift = models.CharField(max_length=2, blank=True, null=True)
+    title = models.IntegerField(
+        
+        choices=[
+            (0, 'سرشیفت'),
+            (1, 'مقدمات'),
+            (2, 'پاساژ'),
+            (3, 'فبنیشر'),
+            (4, 'سردافر'),
+            (5, 'رینگ'),
+            (6, 'لاکنی'),
+            (7, 'دولاتاب'),
+            (8, 'اتوکنر'),
+            (9, 'خدمات'),
+            (10, 'ssm'),
+            (11, 'هیت ست'),
+            (12, 'تاپس'),
+            (13, 'سرپرست'),
+            (14, 'آزمایشگاه'),
+            (15, 'رنگکشی'),
+            (16, 'آبگیر'),
+            (17, 'کوب'),
+            (18, 'رزرو دیگ'),
+            (19, 'استلام'),
+            (20, 'کوب کوچک'),
+            (21, 'لیفتراک'),
+            (22, 'پرس ضایعات'),
+            (23, 'پرس و خشک کن'),
+            (24, 'لیفتراک ریسندگی'),
+            (25, 'کاردینگ'),
+            (26, 'ریبریکر'),
+      
+
+
+            
+        ],
+        null=True,blank=True
+    )
 
     
 
@@ -182,6 +219,59 @@ class HozurGhiab(models.Model):
     hozur = models.BooleanField(default=False)
     estehghaghi = models.BooleanField(default=False)
     estelaji = models.BooleanField(default=False)
+    title=models.IntegerField( choices=[
+            (0, 'سرشیفت'),
+            (1, 'مقدمات'),
+            (2, 'پاساژ'),
+            (3, 'فبنیشر'),
+            (4, 'سردافر'),
+            (5, 'رینگ'),
+            (6, 'لاکنی'),
+            (7, 'دولاتاب'),
+            (8, 'اتوکنر'),
+            (9, 'خدمات'),
+            (10, 'ssm'),
+            (11, 'هیت ست'),
+            (12, 'تاپس'),
+            (13, 'سرپرست'),
+            (14, 'آزمایشگاه'),
+            (15, 'رنگکشی'),
+            (16, 'آبگیر'),
+            (17, 'کوب'),
+            (18, 'رزرو دیگ'),
+            (19, 'استلام'),
+            (20, 'کوب کوچک'),
+            (21, 'لیفتراک'),
+            (22, 'پرس ضایعات'),
+            (23, 'پرس و خشک کن'),
+            (24, 'لیفتراک ریسندگی'),
+            (25, 'کاردینگ'),
+            (26, 'ریبریکر'),
+      
+
+
+            
+        ],null=True,blank=True)
+    def get_hozur(self):
+        if(self.hozur):
+            
+            return '{}'.format('<i class="fa fa-check" aria-hidden="true"></i>')
+        else:
+            return '{}'.format('<i class="icon-check-empty"></i>')
+    def get_estehghaghi(self):
+            if(self.estehghaghi):
+                
+                return '{}'.format('<i class="fa fa-check" aria-hidden="true"></i>')
+            else:
+                return '{}'.format('<i class="icon-check-empty"></i>')
+    def get_estelaji(self):
+        if(self.estelaji):
+            
+            return '{}'.format('<i class="fa fa-check" aria-hidden="true"></i>')
+        else:
+            return '{}'.format('<i class="icon-check-empty"></i>')
+
+
     class Meta:
         db_table="hozurghiab"
         unique_together = ('person', 'hdate',)

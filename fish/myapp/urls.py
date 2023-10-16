@@ -39,11 +39,21 @@ urlpatterns = [
     url(r'^personel/(?P<id>\d+)/profile$', view_profile, name='view_profile'),
     url(r'^personel/Att$', view_att, name='view_att'),
     url(r'^personel/SaveInfo/$', save_personel_att, name='save_personel_att'),
+    url(r'^personel/GetMamnager$', get_manager_by_makan, name='get_manager_by_makan'),
+
     url(r'^personel/LoadDate/$', view_att, name='view_att'),
+    url(r'^personel/(?P<id>\d+)/Delete$', delete_personel, name='delete_personel'),
     url(r'^Hozur/create/$', hozur_create, name='hozur_create'),
+    url(r'^Hozur/GetTitles/$', getTitle, name='getTitle'),
     url(r'^Hozur/Calendar/$', show_hozur_calendar, name='show_hozur_calendar'),
     url(r'^Hozur/GetInfo/$', get_personel_calendar_info, name='get_personel_calendar_info'),
     url(r'^Hozur/GetDetails/$', get_hozur_list_detail, name='get_hozur_list_detail'),
+    url(r'^Profile/Create/$', personel_create, name='create_profile'),
+    url(r'^Profile/(?P<id>\d+)/Update/$', update_personel, name='update_personel'),
+    url(r'^personel/Search/$',search_personel,name='search_personel'),
+    url(r'^Hozur/Success/$',show_hozur_success,name='show_hozur_success'),
+
+
 
 
 

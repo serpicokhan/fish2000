@@ -8,9 +8,9 @@
 <div class="row">
     <div class="col-xl-12 col-xxl-12 col-lg-12">
         <div class="row">
-           
-                        <form action="{% url 'update_personel' form.instance.id %} " method='POST'>
-                            {% csrf_token %}
+            
+            <form action="{% url 'create_profile' %}" method='POST'>
+                {% csrf_token %}
             <div class="col-xl-12">
                 <div class="card profile-card">
                     <div class="card-header flex-wrap border-0 pb-0">
@@ -29,7 +29,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                      
+                     
                             <div class="mb-5">
                                 <div class="title mb-4"><span
                                         class="fs-18 text-black font-w600">اطلاعات</span></div>
@@ -39,32 +39,32 @@
                                             <label>نام</label>
                                             <!-- <input type="text" class="form-control"
                                                    placeholder="نام را وارد کنید"> -->
-                                                     {% render_field form.FName class='form-control' %}
+                                                     {% render_field form.FName class='form-control' placeholder="نام را وارد کنید" %}
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6">
                                         <div class="form-group">
                                             <label>نام خانوادگی</label>
                                             <!-- <input type="text" class="form-control" placeholder="نام مستعار را وارد کنید"> -->
-                                            {% render_field form.LName class='form-control' placeholder='نام مستعار را وارد کنید' %}
+                                            {% render_field form.LName class='form-control' placeholder='نام خانوادگی' %}
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6">
                                         <div class="form-group">
                                             <label>سالن</label>
-                                            {% render_field form.saloon class='form-control style1' placeholder='نام مستعار را وارد کنید' %}
+                                            {% render_field form.saloon class='form-control style1'  %}
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6">
                                         <div class="form-group">
                                             <label>نام سرشیفت</label>
-                                            {% render_field form.manager class='form-control' placeholder='نام مستعار را وارد کنید' %}
+                                            {% render_field form.manager class='form-control'  %}
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6">
                                         <div class="form-group">
                                             <label>کد پرسنلی</label>
-                                            {% render_field form.PNumber class='form-control' placeholder='نام مستعار را وارد کنید' %}
+                                            {% render_field form.PNumber class='form-control' placeholder='کد پرسنلی' %}
                                             
                                            
                                         </div>
@@ -72,25 +72,25 @@
                                     <div class="col-xl-4 col-sm-6">
                                         <div class="form-group">
                                             <label>کد ملی </label>
-                                            {% render_field form.NCode class='form-control' placeholder='نام مستعار را وارد کنید' %}
+                                            {% render_field form.NCode class='form-control' placeholder='کد ملی' %}
                                             
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6">
                                         <div class="form-group">
-                                            <label>عنوان شغلی </label>
-                                            {% render_field form.title class='form-control' placeholder='نام مستعار را وارد کنید' %}
+                                            <label>عنوان شغل </label>
+                                            {% render_field form.title class='form-control' placeholder='کد ملی' %}
                                             
                                         </div>
                                     </div>
                                 </div>
                             </div>
                            
+                      
                     </div>
                 </div>
             </div>
         </form>
-
         </div>
     </div>
     
