@@ -257,19 +257,19 @@ class HozurGhiab(models.Model):
             
             return '{}'.format('<i class="fa fa-check" aria-hidden="true"></i>')
         else:
-            return '{}'.format('<i class="icon-check-empty"></i>')
+            return '{}'.format('<i class="fa fa-close"></i>')
     def get_estehghaghi(self):
             if(self.estehghaghi):
                 
                 return '{}'.format('<i class="fa fa-check" aria-hidden="true"></i>')
             else:
-                return '{}'.format('<i class="icon-check-empty"></i>')
+                return '{}'.format('<i class="fa fa-close"></i>')
     def get_estelaji(self):
         if(self.estelaji):
             
             return '{}'.format('<i class="fa fa-check" aria-hidden="true"></i>')
         else:
-            return '{}'.format('<i class="icon-check-empty"></i>')
+            return '{}'.format('<i class="fa fa-close"></i>')
 
 
     class Meta:

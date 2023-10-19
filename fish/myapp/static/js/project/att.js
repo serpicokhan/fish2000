@@ -26,7 +26,47 @@ $(function(){
     $("#selected_date").change(function(){
         loadnewdata();
     });
+var validate_data=function(){
+  // console.log(456);
+  var is_valid=true;
+  $('.data-row').each(function() {
+    var $tds = $(this).find('td'); // Get all <td> elements in the current <tr>
+    var id_=$(this).attr('data-url');
+    // Create an object to store the data for this row
+    // var rowData = {
+    //     tt:1,
+    //     title2: $('label[name="titletxt"]', this).data('val'), // Get the value of the "out_time_" input
+    //     id:$(this).attr('data-url'),
+    //     hdate:$('#selected_date').val(),
+    //     name: $tds.eq(0).text(), // Get the content of the first <td>
+    //     number: $tds.eq(1).text(), // Get the content of the second <td>
+    //     absentChecked: $(`input[name="absent_${id_}"]`, this).is(':checked'), // Check the status of the "absent_" checkbox
+    //     estehghaghiChecked: $(`input[name="estehghaghi_${id_}"]`, this).is(':checked'), // Check the status of the "estehghaghi_" checkbox
+    //     estelajiChecked: $(`input[name="estelaji_${id_}"]`, this).is(':checked'), // Check the status of the "estelaji_" checkbox
+    //     inTimeValue: $('input[name="in_time_"]', this).val(), // Get the value of the "in_time_" input
+    //     outTimeValue: $('input[name="out_time_"]', this).val(), // Get the value of the "out_time_" input
 
+
+
+    // };
+    console.log($('input[name="in_time_"]', this).val().length,'time');
+    if($('input[name="in_time_"]', this).val().length === 0){
+
+      is_valid= false;
+      return;
+    }
+    if($('input[name="out_time_"]', this).val().length === 0){
+      is_valid= false;
+      return;
+
+    }
+   
+    // Push the rowData object into the dataArray
+    
+});
+console.log("here!");
+return is_valid;
+}
 var senddata=function(){
                     // Create an empty array to store the data
         var dataArray = [];
@@ -37,7 +77,8 @@ var senddata=function(){
             var id_=$(this).attr('data-url');
             // Create an object to store the data for this row
             var rowData = {
-                title2: $('label[name="titletxt"]', this).attr('data-val'), // Get the value of the "out_time_" input
+                tt:1,
+                title2: $('label[name="titletxt"]', this).data('val'), // Get the value of the "out_time_" input
                 id:$(this).attr('data-url'),
                 hdate:$('#selected_date').val(),
                 name: $tds.eq(0).text(), // Get the content of the first <td>
@@ -58,7 +99,7 @@ var senddata=function(){
 
         // Convert the dataArray to a JSON string
         var jsonData = JSON.stringify(dataArray);
-        console.log(jsonData);
+        // console.log(jsonData);
 
         // Now you have your data in a JSON format
         $.ajax({
@@ -66,6 +107,16 @@ var senddata=function(){
             method: 'POST',
             data: JSON.stringify(dataArray),
             contentType: 'application/json',
+            beforeSend:function(x,y,z){
+              console.log("123");
+              if(!validate_data())
+              {
+                console.log("false");
+                x.abort();
+                toastr.error("اطلاعات زمانی را کامل کنید");
+              }
+
+            },
             success: function (data) {
                 if (data.form_is_valid) {
                     //alert("taskGroup created!");  // <-- This is just a placeholder for now for testing
@@ -88,17 +139,17 @@ $('#btn-send').on('click',senddata);
         // Uncheck all checkboxes in the same row
         $(this).closest('tr').find('.row-checkbox').not(this).prop('checked', false);
     });
-    $('.normal-example').persianDatepicker({autoClose: true,initialValueType: 'gregorian', format: 'YYYY-MM-DD',
-    altField: '#gregorianExampleAlt',
-    altFormat: 'LLLL',
-    calendar:{
-        persian: {
-            locale: 'fa'
-        }
-    },
+//     $('.normal-example').persianDatepicker({autoClose: true,initialValueType: 'gregorian', format: 'YYYY-MM-DD',
+//     altField: '#gregorianExampleAlt',
+//     altFormat: 'LLLL',
+//     calendar:{
+//         persian: {
+//             locale: 'fa'
+//         }
+//     },
   
 
-});
+// });
     $("#nextBtn").click(function(e) {
         e.preventDefault();
         const selectedDate = $("#selected_date").val();
@@ -151,7 +202,6 @@ $('#btn-send').on('click',senddata);
         // $("#part1").show();
     });
     $(".js-create-hozur2").click(function(){
-        console.log($(this).attr("data-url"));
         return $.ajax({
             url: $(this).attr("data-url"),
             type: 'get',
@@ -215,12 +265,18 @@ $('#btn-send').on('click',senddata);
       });
       var selectedChip = null;
       var selectedId=null;
+      var selectedPNum=null;
+      var selectedTitle=null;
       $("#modal-company").on("click",".selectable-chip", function() {
         $('.selectable-chip.active').removeClass('active');
         $(this).toggleClass("active");
         var chipName = $(this).data("chip-name");
         selectedChip=chipName;
         selectedId=$(this).data('id');
+        selectedPNum=$(this).data('url');
+        selectedTitle=$(this).data('title');
+        selectedTitleText=$(this).data('ttext');
+
         // if ($(this).hasClass("active")) {
         //   selectedChips.push(chipName);
         // } else {
@@ -232,26 +288,26 @@ $('#btn-send').on('click',senddata);
       });
       
       $("#modal-company").on('click','.js-add-to-table',function(){
-
+        console.log(selectedChip);
         var datas=selectedChip.split(' ');
         $("#tbody-company").append(`<tr data-url=${selectedId} class="data-row">
         <td> ${datas[1]} ${datas[2]}</td>
-        <td>${datas[0]}</td>
-        <td><label class="form-control titletxt" data-url="/Hozur/GetTitles/">سرشیفت</label></td>
+        <td>${selectedPNum}</td>
+        <td><label class="form-control titletxt"  data-val=16  data-ttext=${selectedTitleText} data-url="/Hozur/GetTitles/" name="titletxt">${selectedTitleText}</label></td>
         <td>
-          <div class="custom-control custom-checkbox checkbox-success check-lg mr-3">
+          <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
           <input type="checkbox" class="custom-control-input row-checkbox" checked name="absent_${selectedId}">
           <label class="custom-control-label" for="absent_${selectedId}"></label>
           </div>
         </td>
         <td>
-        <div class="custom-control custom-checkbox checkbox-success check-lg mr-3">
+        <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
         <input type="checkbox" class="custom-control-input row-checkbox" name="estehghaghi_${selectedId}">
         <label class="custom-control-label" for="estehghaghi_${selectedId}"></label>
         </div>
         </td>
         <td>
-        <div class="custom-control custom-checkbox checkbox-success check-lg mr-3">
+        <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
         <input type="checkbox" class="custom-control-input row-checkbox" name="estelaji_${selectedId}">
         <label class="custom-control-label" for="estelaji_${selectedId}"></label>
         </div>
@@ -281,6 +337,7 @@ $('#btn-send').on('click',senddata);
         
         $(this).addClass("active");
         selectedChip = $(this);
+        
 
         // Display the selected chip in the "Saved Chip" area
         $("#selected-chip").html('<span class="saved-chip">' + $(this).data("chip-name") + '</span>');

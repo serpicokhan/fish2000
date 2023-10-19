@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>سامانه کارکنان ریسندگی خاطره کاشان</title>
+    <title>سامانه مدیران سالن خاطره</title>
     <meta name="description" content="Some description for the page"/>
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon.png' %}">
@@ -61,11 +61,11 @@
                                     <form method="post" action="{% url 'user_login' %}"  >
                                         {% csrf_token %}
                                         <div class="form-group">
-                                            <label class="mb-1 text-white"><strong>کد پرسنلی</strong></label>
+                                            <label class="mb-1 text-white"><strong>نام کاربری</strong></label>
                                             {{form.username| add_class:"form-control" }}
                                         </div>
                                         <div class="form-group">
-                                            <label class="mb-1 text-white"><strong>کد ملی</strong></label>
+                                            <label class="mb-1 text-white"><strong>رمز عبور</strong></label>
                                             {{form.password| add_class:"form-control" }}
                                         </div>
                                        

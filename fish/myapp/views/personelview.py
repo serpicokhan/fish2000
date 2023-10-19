@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime
+
 from myapp.models import Personnel,PersonelFile,HozurGhiab,SysUser,Asset  # Replace 'myapp' with the name of your Django app
 from django.shortcuts import render
 from django.core.paginator import *
@@ -22,10 +23,10 @@ from django.db import IntegrityError
 from django.contrib.auth.models import User,Group
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import permission_required
-
+from jdatetime import datetime as dt
 def doPaging(request,books):
     page=request.GET.get('page',1)
-    paginator = Paginator(books, 10)
+    paginator = Paginator(books, 60)
     wos=None
     try:
         wos=paginator.page(page)
@@ -37,7 +38,7 @@ def doPaging(request,books):
 @permission_required('myapp.view_personnnel')
 def list_personel(request):
     books=Personnel.objects.all()
-    wos=doPaging(request,(books))
+    wos=doPaging(request,list(books))
     group = Group.objects.get(name='manager')
     asset=Asset.objects.all()
 
@@ -203,16 +204,18 @@ def view_att(request):
             return render(request, 'myapp/personel/try_tommarow.html', {'user':manager,'personnel_list': users,'title':'مشخصات','section':'list_personel'})
         else:
             print(request.method)
+            date_obj = datetime.datetime.now()
+            jalali_date=jdatetime.date.fromgregorian(date=date_obj)
+            formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
             user_name=request.user
             manager=SysUser.objects.get(userId=request.user)
             wos=Personnel.objects.filter(manager=manager)
-            return render(request, 'myapp/personel/att.html', {'user':user_name,'personnel_list': wos,'title':'مشخصات','section':'list_personel'})
+            return render(request, 'myapp/personel/att.html', {'user':user_name,'personnel_list': wos,'title':'مشخصات','section':'list_personel','dt':formatted_date})
     else:
         #return json response for ajax method
         data=dict()
         send_data = json.loads(request.body)
         date=DateJob.getTaskDate(send_data['hdate'])
-        print(send_data,'date!!!!!!!!!!!!')
 
         manager=SysUser.objects.get(userId=request.user)
         users=HozurGhiab.objects.filter(hdate=date,person__in=Personnel.objects.filter(manager=manager))
@@ -222,7 +225,6 @@ def view_att(request):
             })
             return JsonResponse(data)
         else:
-            print(request.method)
             user_name=request.user
             manager=SysUser.objects.get(userId=request.user)
             wos=Personnel.objects.filter(manager=manager)
@@ -238,17 +240,16 @@ def save_personel_att(request):
         dt={}
         data = json.loads(request.body)
         registerd_user=SysUser.objects.get(userId=request.user)
-        print("********")
         for i in data:
             person=Personnel.objects.get(id=int(i['id']))
             hdate=DateJob.getTaskDate(i['hdate'])
-            
+            print(i)
             try:
                 HozurGhiab.objects.create(person=person,\
                                         incom_time=i['inTimeValue'],outcome_time=i['outTimeValue'],\
                                         hdate=hdate,hozur=i['absentChecked'],\
                                         estehghaghi=i['estehghaghiChecked'],estelaji=i['estelajiChecked'],\
-                                            registerd_by=registerd_user,title=i['title2'])
+                                        registerd_by=registerd_user,title=i['title2'])
             except IntegrityError as e:
                 o=HozurGhiab.objects.get(person=person,hdate=hdate)
                 o.incom_time=i['inTimeValue']
@@ -266,7 +267,7 @@ def save_personel_att(request):
 
         return JsonResponse(dt)
     return HttpResponse('nothins saved')
-def user_login(request):
+def user_login2(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -392,6 +393,10 @@ def delete_personel(request,id):
             return JsonResponse(data)
 def search_personel(request):
     q=request.GET.get("q",False)
+    asset_param=request.GET.get("asset",False)
+
+    manager_param=request.GET.get("manager",False)
+
     # books=Personnel.objects.all()
     # wos=doPaging(request,(books))
     names = q.split()
@@ -401,21 +406,54 @@ def search_personel(request):
     users_in_group = group.user_set.all()
     users=SysUser.objects.filter(userId__in=users_in_group).order_by('fullName')
     data=dict()
-    if(q and len(names)==1):
-    #   
-        books=Personnel.objects.filter(Q(FName__contains=q)|Q(LName__contains=q)|Q(PNumber=q)|Q(NCode=q))
-        wos=doPaging(request,(books))
-    elif(q and len(names)>1):
-        first_name, last_name = names
-        books=Personnel.objects.filter(Q(FName__contains=first_name) & Q(LName__contains=last_name))
-        print(Personnel.objects.filter(Q(FName__contains=first_name) & Q(LName__contains=last_name)).query)
-        wos=doPaging(request,(books))
+    # if(q and len(names)==1):
+    # #   
+    #     books=Personnel.objects.filter(Q(FName__contains=q)|Q(LName__contains=q)|Q(PNumber=q)|Q(NCode=q))
+    #     wos=doPaging(request,list(books))
+
+    # elif(q and len(names)>1):
+    #     # first_name, last_name = names
+    #     books=Personnel.objects.filter(Q(FName__contains=names[0]) & Q(LName__contains=names[1]))
+    #     wos=doPaging(request,list(books))
+
+    #     # print(Personnel.objects.filter(Q(FName__contains=first_name) & Q(LName__contains=last_name)).query)
+    search_words = q.split()
+
+# Initialize an empty Q object to build the query dynamically
+    query = Q()
+
+    # Loop through each word in the search term and add it to the query
+    for word in search_words:
+        # Add conditions for both fname and lname
+        query |= Q(FName__icontains=word) | Q(LName__icontains=word)
+        # query |= Q(FName__exact=word) | Q(LName__exact=word)
+    # for word in search_words:
+    #     if ' ' in word:
+    #         query |= Q(FName__exact=word) | Q(LName__exact=word)
+    
+
+# Perform the query on your model
+    if(len(search_words)>0):
+        results = Personnel.objects.filter(query)
+        wos=doPaging(request,list(results))
+
+    else:
+        books=Personnel.objects.all()
+        wos=doPaging(request,list(books))
+    if(asset_param!='-1'):
+        books=books.filter(saloon=asset_param)
+        wos=doPaging(request,list(books))
+
+    if(manager_param!='-1'):
+        books=books.filter(manager=manager_param)
+        wos=doPaging(request,list(books))
+
 
 
         
 
    
-    return render(request,'myapp/personel/personelList.html',{'fishes':wos,'title':'مشخصات','section':'list_personel','manager':users,'asset':asset,'q':q})
+    return render(request,'myapp/personel/personelList.html',{'fishes':wos,'title':'مشخصات','section':'list_personel','manager':users,'asset':asset,'q':q,'manager_param':manager_param,'asset_param':asset_param})
 def getTitle(request):
     choices=[
             (0, 'سرشیفت'),

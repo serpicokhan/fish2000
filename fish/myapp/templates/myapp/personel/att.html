@@ -5,14 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حضور غیاب روزانه</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/persian-datepicker.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="{% static 'css/style.css'%}" rel="stylesheet">
+
     <style>
         body{
             direction:rtl;
             text-align:justify
         }
+      
+        
+          
     </style>
 </head>
 <body>
@@ -32,8 +36,8 @@
             </div>
             <div class='form-group'>
                 <div class="input-group-append d-flex justify-content-center">
-                    <input type="text" class="form-control normal-example" id="selected_date" required readonly>
-
+                    <input type="text" class="form-control normal-example" id="selected_date" required readonly value='{{dt}}'>
+ 
                     <button id="nextBtn" class="btn btn-primary mx-1" style='background-color: #E8EAF6;
                     color: black;'> صبح</button>
                     <button id="button2" class="btn btn-secondary mx-1" style='background-color:#3F51B5
@@ -48,11 +52,11 @@
             {% comment %} <h2>Part 2 - Daily Attendance</h2> {% endcomment %}
             {% comment %} <h3>Date: <span id="selected_date_display"></span></h3> {% endcomment %}
             <form id="attendanceForm">
-                <div class="table-responsive">
-                    <table class="table table-responsive-md">
+                <div class="table-responsive table-container">
+                    <table class="table table-responsive-sm table-hover  table-bordered">
                         <thead>
                             <tr>
-                                <th>نام</th>
+                                <th class="fixed-column">نام</th>
                                 <th>کد</th>
                                 <th>سمت</th>
                                 <th>حضور</th>
@@ -83,10 +87,9 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ
-                                لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ</p>
                         </div>
                         <div class="modal-footer">
+                            <p>لطفا چند لحظه صبر نمایید</p>
                             <button type="button" class="btn btn-danger light" data-dismiss="modal">
                                 بستن
                             </button>
@@ -110,8 +113,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{% static 'js/project/att.js'  %}" ></script>
 
-    <script>
-       
-    </script>
+   
 </body>
 </html>

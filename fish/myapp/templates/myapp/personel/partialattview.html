@@ -1,10 +1,10 @@
 {% for personnel in personnel_list %}
                             <tr data-url={{personnel.id}} class='data-row'>
-                                <td>{{ personnel.FName }} {{personnel.LName}}</td>
+                                <td class="fixed-column">{{ personnel.FName }} {{personnel.LName}}</td>
                                 <td>{{ personnel.PNumber }}</td>
                                 <td> <label class="form-control titletxt" data-val={{personnel.title}}  data-url='/Hozur/GetTitles/' name="titletxt">{{personnel.get_title_display}}</label> </td>
                                 <td>
-                                    <div class="custom-control custom-checkbox checkbox-success check-lg mr-3">
+                                    <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
                                         <input type="checkbox" class="custom-control-input row-checkbox" checked name="absent_{{ personnel.id }}" id="absent_{{ personnel.id }}">
                                         <label class="custom-control-label" for="absent_{{ personnel.id }}"></label>
                                     </div>
@@ -12,7 +12,7 @@
                                     
                                     {% comment %} <input type="checkbox" class='form-control row-checkbox' checked name="absent_{{ personnel.code }}"></td> {% endcomment %}
                                 <td>
-                                    <div class="custom-control custom-checkbox checkbox-success check-lg mr-3">
+                                    <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
                                         <input type="checkbox" class="custom-control-input row-checkbox" name="estehghaghi_{{ personnel.id }}" id="estehghaghi_{{ personnel.id }}">
                                         <label class="custom-control-label" for="estehghaghi_{{ personnel.id }}"></label>
                                     </div>
@@ -22,7 +22,7 @@
                                 </td>
     
                                 <td>
-                                    <div class="custom-control custom-checkbox checkbox-success check-lg mr-3">
+                                    <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
                                         <input type="checkbox" class="custom-control-input row-checkbox" name="estelaji_{{ personnel.id }}" id="estelaji_{{ personnel.id }}">
                                         <label class="custom-control-label" for="estelaji_{{ personnel.id }}"></label>
                                     </div>

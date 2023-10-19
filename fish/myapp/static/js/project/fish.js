@@ -23,9 +23,17 @@ $(function () {
       });
     }
     $(".btn_personle_search").click(function(e){
-      var text=$("#personel_search").val();
-      if(text)
-       window.location='/personel/Search/?q='+text
+      // alert($("#asset_id").val());
+      const text=$("#personel_search").val();
+      const asset=$("#asset_id").val();
+      const manager=$("#manager_id").val();
+      // if(manager === 'سرشیفت'){
+      //   toastr.error("سر شیفت را مشخص کنید");
+      // }
+      // else{
+      // alert(asset);
+      window.location=`/personel/Search/?q=${text}&manager=${manager}&asset=${asset}`;
+      // }
       return false;
     });
     var view_shekayat =function (search) {

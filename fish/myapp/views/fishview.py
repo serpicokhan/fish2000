@@ -80,10 +80,12 @@ def details_fish(request):
     code_meli=request.POST.get('code_meli',False)
     code=request.POST.get('code',False)
     mah1=request.POST.get('mah1',1)
+    sal=request.POST.get('year',1)
+
     print("mah1",mah1)
     month=['','فروردین','ارديبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند']
 
-    wos=Fish.objects.filter(code=code,code_meli=code_meli,mah=mah1)
+    wos=Fish.objects.filter(code=code,code_meli=code_meli,mah=mah1,sal=sal)
     if(wos.count()>0):
         karkard=int(wos[0].monthly_hoghugh)/int(wos[0].daily_hoghugh)
 
