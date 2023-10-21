@@ -37,17 +37,23 @@ def doPaging(request,books):
     return wos
 @permission_required('myapp.view_personnnel')
 def list_personel(request):
+    asset_param=request.GET.get('asset_param',False)
+    manager_param=request.GET.get('manager_param',False)
+
     books=Personnel.objects.all()
+    if(asset_param and asset_param!='-1'):
+        books=books.filter(saloon=asset_param)
+    if(manager_param  and asset_param!='-1'):
+        books=books.filter(manager=manager_param)
     wos=doPaging(request,list(books))
     group = Group.objects.get(name='manager')
     asset=Asset.objects.all()
+    
 
 # Get all users belonging to the group
     users_in_group = group.user_set.all()
     users=SysUser.objects.filter(userId__in=users_in_group).order_by('fullName')
-
-
-    return render(request, 'myapp/personel/personelList.html', {'fishes': wos,'title':'مشخصات','section':'list_personel','manager':users,'asset':asset})
+    return render(request, 'myapp/personel/personelList.html', {'fishes': wos,'title':'مشخصات','section':'list_personel','manager':users,'asset':asset,'asset_param':asset_param,'manager_param':manager_param})
 
 @permission_required('myapp.view_personnnel')
 def view_profile(request,id):
@@ -393,9 +399,9 @@ def delete_personel(request,id):
             return JsonResponse(data)
 def search_personel(request):
     q=request.GET.get("q",False)
-    asset_param=request.GET.get("asset",False)
+    asset_param=request.GET.get("asset_param",False)
 
-    manager_param=request.GET.get("manager",False)
+    manager_param=request.GET.get("manager_param",False)
 
     # books=Personnel.objects.all()
     # wos=doPaging(request,(books))
@@ -456,38 +462,43 @@ def search_personel(request):
     return render(request,'myapp/personel/personelList.html',{'fishes':wos,'title':'مشخصات','section':'list_personel','manager':users,'asset':asset,'q':q,'manager_param':manager_param,'asset_param':asset_param})
 def getTitle(request):
     choices=[
-            (0, 'سرشیفت'),
-            (1, 'مقدمات'),
-            (2, 'پاساژ'),
-            (3, 'فبنیشر'),
-            (4, 'سردافر'),
-            (5, 'رینگ'),
-            (6, 'لاکنی'),
-            (7, 'دولاتاب'),
-            (8, 'اتوکنر'),
-            (9, 'خدمات'),
-            (10, 'ssm'),
-            (11, 'هیت ست'),
-            (12, 'تاپس'),
-            (13, 'سرپرست'),
-            (14, 'آزمایشگاه'),
-            (15, 'رنگکشی'),
-            (16, 'آبگیر'),
-            (17, 'کوب'),
-            (18, 'رزرو دیگ'),
-            (19, 'استلام'),
-            (20, 'کوب کوچک'),
-            (21, 'لیفتراک'),
-            (22, 'پرس ضایعات'),
-            (23, 'پرس و خشک کن'),
-            (24, 'لیفتراک ریسندگی'),
-            (25, 'کاردینگ'),
-            (26, 'ریبریکر'),
+            (0, 'سرشیفت',[1,2,3,4]),
+            (1, 'مقدمات',[1,2,3]),
+            (2, 'پاساژ',[1,2,3]),
+            (3, 'فبنیشر',[1,2,3]),
+            (4, 'سردافر',[1,2,3]),
+            (5, 'رینگ',[1,2,3]),
+            (6, 'لاکنی',[1,2,3]),
+            (7, 'دولاتاب',[1,2,3]),
+            (8, 'اتوکنر',[1,2,3]),
+            (9, 'خدمات',[1,2,3]),
+            (10, 'ssm',[1,2,3]),
+            (11, 'هیت ست',[1,2,3]),
+            (12, 'تاپس',[1,2,3]),
+            (13, 'سرپرست',[4]),
+            (14, 'آزمایشگاه',[4]),
+            (15, 'رنگکشی',[4]),
+            (16, 'آبگیر',[4]),
+            (17, 'کوب',[4]),
+            (18, 'رزرو دیگ',[4]),
+            (19, 'استلام',[4]),
+            (20, 'کوب کوچک',[4]),
+            (21, 'لیفتراک',[4]),
+            (22, 'پرس ضایعات',[4]),
+            (23, 'پرس و خشک کن',[4]),
+            (24, 'لیفتراک ریسندگی',[4]),
+            (25, 'کاردینگ',[1,2,3]),
+            (26, 'ریبریکر',[1,2,3]),]
       
+    id_user=request.GET.get("id",False)
+    if(id_user):
+        x=Personnel.objects.get(id=id_user).saloon.id
+        choices = [(id, title, diff_id) for id, title, diff_id in choices if x in diff_id]      
+    
 
 
             
-        ]
+        
     data=dict()
     sorted_choices = sorted(choices, key=lambda x: x[1])
     data['html_hozur_form']=render_to_string('myapp/personel/partialTitle.html',{'chips':sorted_choices})

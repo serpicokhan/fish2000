@@ -1,6 +1,6 @@
 $(function(){
     var loadnewdata=function(){
-        alert(1);
+        
         var rowdata={
             'hdate':$("#selected_date").val()
         }
@@ -222,6 +222,8 @@ $('#btn-send').on('click',senddata);
       });
       $("#tbody-company").on("click",".titletxt",function(){
         clicked_element=$(this).closest('tr').data('url');
+        scrollPosition = $(window).scrollTop();
+
         return $.ajax({
           url: $(this).attr("data-url"),
           type: 'get',
@@ -254,7 +256,7 @@ $('#btn-send').on('click',senddata);
       $("#modal-company").on("input","#chip-search-title", function() {
         var searchTerm = $(this).val().toLowerCase();
         
-        $(".selectable-chip").each(function() {
+        $(".selectable-chip2").each(function() {
           var chipName = $(this).data("chip-name").toString().toLowerCase();
           if (chipName.includes(searchTerm)) {
             $(this).show();
@@ -265,9 +267,50 @@ $('#btn-send').on('click',senddata);
       });
       var selectedChip = null;
       var selectedId=null;
+      var selectedIds=[];
       var selectedPNum=null;
+      var selectedPNums=[];
+
       var selectedTitle=null;
+      var selectedTitles=[]
+      var selectedChips = [];
+      var selectedTitleTexts=[];
+      var scrollPosition=null;
+
+
       $("#modal-company").on("click",".selectable-chip", function() {
+        // $('.selectable-chip.active').removeClass('active');
+        $(this).toggleClass("active");
+        var chipName = $(this).data("chip-name");
+        selectedChip=chipName;
+        selectedId=$(this).data('id');
+        selectedPNum=$(this).data('url');
+        selectedTitle=$(this).data('title');
+        selectedTitleText=$(this).data('ttext');
+
+        if ($(this).hasClass("active")) {
+          selectedChips.push(chipName);
+          selectedIds.push(selectedId);
+          selectedPNums.push(selectedPNum);
+          selectedTitles.push(selectedTitle);
+          selectedTitleTexts.push(selectedTitleText);
+
+        } else {
+          var index = selectedChips.indexOf(chipName);
+          if (index !== -1) {
+            selectedChips.splice(index, 1);
+            selectedIds.splice(index, 1);
+            selectedPNums.splice(index, 1);
+            selectedTitles.splice(index, 1);
+            selectedTitleTexts.splice(index, 1);
+
+          }
+        }
+      });
+      $('#modal-company').on('hidden.bs.modal', function () {
+        $(window).scrollTop(900);
+    });
+      $("#modal-company").on("click",".selectable-chip2", function() {
         $('.selectable-chip.active').removeClass('active');
         $(this).toggleClass("active");
         var chipName = $(this).data("chip-name");
@@ -276,6 +319,15 @@ $('#btn-send').on('click',senddata);
         selectedPNum=$(this).data('url');
         selectedTitle=$(this).data('title');
         selectedTitleText=$(this).data('ttext');
+        // alert(2);
+        var $trToFind = $("tr[data-url='" + clicked_element + "']");
+        var $label = $trToFind.find("label.titletxt");
+        $label.html(selectedChip.split(' ')[1]);
+        $label.attr('data-val',selectedChip.split(' ')[0]);
+        
+        $("#modal-company").modal("hide");
+        // console.log("scroll position0:",scrollPosition)
+        // $(window).scrollTop(900);
 
         // if ($(this).hasClass("active")) {
         //   selectedChips.push(chipName);
@@ -288,35 +340,72 @@ $('#btn-send').on('click',senddata);
       });
       
       $("#modal-company").on('click','.js-add-to-table',function(){
-        console.log(selectedChip);
-        var datas=selectedChip.split(' ');
-        $("#tbody-company").append(`<tr data-url=${selectedId} class="data-row">
-        <td> ${datas[1]} ${datas[2]}</td>
-        <td>${selectedPNum}</td>
-        <td><label class="form-control titletxt"  data-val=16  data-ttext=${selectedTitleText} data-url="/Hozur/GetTitles/" name="titletxt">${selectedTitleText}</label></td>
-        <td>
+        // console.log(selectedChips);
+        var tbl_str="";
+        $.each(selectedChips, function(index, item) {
+          console.log(item);
+          // Your code here for each item
+          var datas=item.split(' ');
+          var lname = datas.slice(1).join(" ");
+          console.log(datas);
+          tbl_str+=`<tr data-url=${selectedIds[index]} class="data-row">
+          <td> ${lname}</td>
+          <td>${selectedPNums[index]}</td>
+          <td><label class="form-control titletxt"  data-val=${selectedTitles[index]}  data-ttext=${selectedTitleTexts[index]} data-url="/Hozur/GetTitles/?id=${selectedIds[index]}" name="titletxt">${selectedTitleTexts[index]}</label></td>
+          <td>
+            <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
+            <input type="checkbox" class="custom-control-input row-checkbox" checked name="absent_${selectedIds[index]}">
+            <label class="custom-control-label" for="absent_${selectedIds[index]}"></label>
+            </div>
+          </td>
+          <td>
           <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
-          <input type="checkbox" class="custom-control-input row-checkbox" checked name="absent_${selectedId}">
-          <label class="custom-control-label" for="absent_${selectedId}"></label>
+          <input type="checkbox" class="custom-control-input row-checkbox" name="estehghaghi_${selectedIds[index]}">
+          <label class="custom-control-label" for="estehghaghi_${selectedIds[index]}"></label>
           </div>
-        </td>
-        <td>
-        <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
-        <input type="checkbox" class="custom-control-input row-checkbox" name="estehghaghi_${selectedId}">
-        <label class="custom-control-label" for="estehghaghi_${selectedId}"></label>
-        </div>
-        </td>
-        <td>
-        <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
-        <input type="checkbox" class="custom-control-input row-checkbox" name="estelaji_${selectedId}">
-        <label class="custom-control-label" for="estelaji_${selectedId}"></label>
-        </div>
-        </td>
+          </td>
+          <td>
+          <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
+          <input type="checkbox" class="custom-control-input row-checkbox" name="estelaji_${selectedId}">
+          <label class="custom-control-label" for="estelaji_${selectedId}"></label>
+          </div>
+          </td>
+         
+  
+          <td><input type="time" name="in_time_" step="60"></td>
+          <td><input type="time" name="out_time_" step="60"></td>
+      </tr>`;
+          
+      });
+        // var datas=selectedChip.split(' ');
+    //     $("#tbody-company").append(`<tr data-url=${selectedId} class="data-row">
+    //     <td> ${datas[1]} ${datas[2]}</td>
+    //     <td>${selectedPNum}</td>
+    //     <td><label class="form-control titletxt"  data-val=16  data-ttext=${selectedTitleText} data-url="/Hozur/GetTitles/" name="titletxt">${selectedTitleText}</label></td>
+    //     <td>
+    //       <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
+    //       <input type="checkbox" class="custom-control-input row-checkbox" checked name="absent_${selectedId}">
+    //       <label class="custom-control-label" for="absent_${selectedId}"></label>
+    //       </div>
+    //     </td>
+    //     <td>
+    //     <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
+    //     <input type="checkbox" class="custom-control-input row-checkbox" name="estehghaghi_${selectedId}">
+    //     <label class="custom-control-label" for="estehghaghi_${selectedId}"></label>
+    //     </div>
+    //     </td>
+    //     <td>
+    //     <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
+    //     <input type="checkbox" class="custom-control-input row-checkbox" name="estelaji_${selectedId}">
+    //     <label class="custom-control-label" for="estelaji_${selectedId}"></label>
+    //     </div>
+    //     </td>
        
 
-        <td><input type="time" name="in_time_" step="60"></td>
-        <td><input type="time" name="out_time_" step="60"></td>
-    </tr>`);
+    //     <td><input type="time" name="in_time_" step="60"></td>
+    //     <td><input type="time" name="out_time_" step="60"></td>
+    // </tr>`);
+    $("#tbody-company").append(tbl_str);
     $("#modal-company").modal("hide");
 
       });
@@ -331,6 +420,18 @@ $('#btn-send').on('click',senddata);
 
       });
       $("#modal-company").on("click",'selectable-chip', function() {
+        if (selectedChip) {
+          selectedChip.removeClass("active");
+        }
+        
+        $(this).addClass("active");
+        selectedChip = $(this);
+        
+
+        // Display the selected chip in the "Saved Chip" area
+        $("#selected-chip").html('<span class="saved-chip">' + $(this).data("chip-name") + '</span>');
+      });
+      $("#modal-company").on("click",'selectable-chip2', function() {
         if (selectedChip) {
           selectedChip.removeClass("active");
         }

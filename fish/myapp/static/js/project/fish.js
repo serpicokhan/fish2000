@@ -32,7 +32,7 @@ $(function () {
       // }
       // else{
       // alert(asset);
-      window.location=`/personel/Search/?q=${text}&manager=${manager}&asset=${asset}`;
+      window.location=`/personel/Search/?q=${text}&manager_param=${manager}&asset_param=${asset}`;
       // }
       return false;
     });
@@ -96,7 +96,7 @@ $(function () {
   });
   
 $("#asset_id").click(function(){
-  alert(123);
+  // alert(123);
   $.ajax({
     url:`personel/GetMamnager?q=${$(this).val()}`,
     success:function(){
