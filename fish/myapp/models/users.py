@@ -219,6 +219,7 @@ class HozurGhiab(models.Model):
     hozur = models.BooleanField(default=False)
     estehghaghi = models.BooleanField(default=False)
     estelaji = models.BooleanField(default=False)
+    is_ezafekar=models.BooleanField(default=False)
     title=models.IntegerField( choices=[
             (0, 'سرشیفت'),
             (1, 'مقدمات'),

@@ -77,7 +77,7 @@ var senddata=function(){
             var id_=$(this).attr('data-url');
             // Create an object to store the data for this row
             var rowData = {
-                tt:1,
+                ezafe_kar:$(this).attr('data-ezafekar')||false,
                 title2: $('label[name="titletxt"]', this).data('val'), // Get the value of the "out_time_" input
                 id:$(this).attr('data-url'),
                 hdate:$('#selected_date').val(),
@@ -343,12 +343,10 @@ $('#btn-send').on('click',senddata);
         // console.log(selectedChips);
         var tbl_str="";
         $.each(selectedChips, function(index, item) {
-          console.log(item);
           // Your code here for each item
           var datas=item.split(' ');
           var lname = datas.slice(1).join(" ");
-          console.log(datas);
-          tbl_str+=`<tr data-url=${selectedIds[index]} class="data-row">
+          tbl_str+=`<tr data-url=${selectedIds[index]} class="data-row" data-ezafekar='true'>
           <td> ${lname}</td>
           <td>${selectedPNums[index]}</td>
           <td><label class="form-control titletxt"  data-val=${selectedTitles[index]}  data-ttext=${selectedTitleTexts[index]} data-url="/Hozur/GetTitles/?id=${selectedIds[index]}" name="titletxt">${selectedTitleTexts[index]}</label></td>

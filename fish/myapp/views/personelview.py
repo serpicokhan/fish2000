@@ -249,13 +249,14 @@ def save_personel_att(request):
         for i in data:
             person=Personnel.objects.get(id=int(i['id']))
             hdate=DateJob.getTaskDate(i['hdate'])
+            ezafekar=True if i['ezafe_kar'] == 'true' else False
             print(i)
             try:
                 HozurGhiab.objects.create(person=person,\
                                         incom_time=i['inTimeValue'],outcome_time=i['outTimeValue'],\
                                         hdate=hdate,hozur=i['absentChecked'],\
                                         estehghaghi=i['estehghaghiChecked'],estelaji=i['estelajiChecked'],\
-                                        registerd_by=registerd_user,title=i['title2'])
+                                        registerd_by=registerd_user,title=i['title2'],is_ezafekar=ezafekar)
             except IntegrityError as e:
                 o=HozurGhiab.objects.get(person=person,hdate=hdate)
                 o.incom_time=i['inTimeValue']
@@ -266,6 +267,7 @@ def save_personel_att(request):
                 o.estelaji=i['estelajiChecked']
                 o.title=int(i['title2'])
                 o.registerd_by=registerd_user
+                o.is_ezafekar=ezafekar
                 o.save()
                 
            

@@ -5,9 +5,11 @@
     <input type="text" id="chip-search" class="form-control mb-3" placeholder="جستجو">
     
     {% for chip in chips %}
-      <a href="#" class="list-group-item list-group-item-action selectable-chip"
+       <a href="#" class="list-group-item list-group-item-action selectable-chip"
        data-title={{chip.title}} data-ttext="{{chip.get_title_display}}"  data-id='{{chip.id}}' 
        data-url='{{chip.PNumber}} ' data-chip-name="{{ chip.id }} {{ chip.FName }} {{chip.LName}}">{{ chip.FName }} {{chip.LName}}</a>
+        
+       
       
       {% endfor %}
   </div>
@@ -20,6 +22,11 @@
          margin: 4px; /* Adjust the margin as needed for spacing between chips */
       cursor: pointer;
       }
+      .chip-input {
+      display: none; /* Initially, hide the input fields */
+      border: none;
+      background: transparent;
+    }
     /* Custom CSS for selectable chips */
     .selectable-chip {
         cursor: pointer;

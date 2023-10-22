@@ -1,5 +1,10 @@
 {% for personnel in personnel_list %}
-<tr data-url={{personnel.person.id}} class='data-row'>
+<tr data-url={{personnel.person.id}} class='data-row' 
+{% if personnel.is_ezafekar %}
+style="background-color: #eec8afbb;"
+{% endif %}
+
+>
     <td>
         {{ forloop.counter }}
     </td>
