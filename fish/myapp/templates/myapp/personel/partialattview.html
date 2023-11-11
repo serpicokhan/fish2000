@@ -2,7 +2,7 @@
                             <tr data-url={{personnel.id}} class='data-row'>
                                 <td class="fixed-column">{{ personnel.FName }} {{personnel.LName}}</td>
                                 <td>{{ personnel.PNumber }}</td>
-                                <td> <label class="form-control titletxt" data-val={{personnel.title}}  data-url='/Hozur/GetTitles/?id={{personnel.id}}' name="titletxt">{{personnel.get_title_display}}</label> </td>
+                                <td> <label class="form-control titletxt" data-val={{personnel.title|default_if_none:"--"}}  data-url='/Hozur/GetTitles/?id={{personnel.id}}' name="titletxt">{{personnel.get_title_display|default_if_none:"--"}}</label> </td>
                                 <td>
                                     <div class="custom-control custom-checkbox checkbox-info check-lg mr-3">
                                         <input type="checkbox" class="custom-control-input row-checkbox" checked name="absent_{{ personnel.id }}" id="absent_{{ personnel.id }}">

@@ -53,6 +53,7 @@ urlpatterns = [
     url(r'^Profile/(?P<id>\d+)/Update/$', update_personel, name='update_personel'),
     url(r'^personel/Search/$',search_personel,name='search_personel'),
     url(r'^Hozur/Success/$',show_hozur_success,name='show_hozur_success'),
+    url(r'^Hozur/Delete$',hozur_delete,name='hozur_delete'),
 
 
 

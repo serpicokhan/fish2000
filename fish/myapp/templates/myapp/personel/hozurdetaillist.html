@@ -17,7 +17,7 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">جدول حضور غیاب {{date}}</h4>
+                <h4 class="card-title">جدول حضور غیاب {{date}} {{manager_name}}</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -35,19 +35,23 @@
                             <th>ورود</th>
                             <th>خروج</th>
                         </tr>
-                        </thead>
-                        <tbody>
+                        </thead >
+                        <tbody id="tbody_hozur">
                        {% include 'myapp/personel/partialhozurdetailist.html' %}
                         </tbody>
                     </table>
+                    <p>
+                        
+                                <button class="btn-danger js-delete-personel" data-url="manager={{manager}}&hdate={{hdate}}">حدف</button>
+                            </div>
+                        
+                    </p>
                 </div>
             </div>
         </div>
     </div>
     
 </div>
-{% endblock %}
-{% block javascript %}
 <script>
     $(document).ready(function () {
         $("#main_search").on("keyup", function () {
@@ -62,6 +66,23 @@
                 }
             });
         });
+        $(".js-delete-personel").click(function(){
+            a=confirm("حدف شود؟");
+            if(a){
+                const dst_url=$(this).data('url');
+                $.ajax({
+                    url:`/Hozur/Delete?${dst_url}`,
+                    method:'get',
+                    success:function(data){
+                        if(data.form_is_valid)
+                            $("#tbody_hozur").html('');
+                    }
+                });
+            }
+        });
     });
 </script>
 {% endblock %}
+
+
+

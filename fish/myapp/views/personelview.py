@@ -209,13 +209,12 @@ def view_att(request):
         if(users.count()>0):
             return render(request, 'myapp/personel/try_tommarow.html', {'user':manager,'personnel_list': users,'title':'مشخصات','section':'list_personel'})
         else:
-            print(request.method)
             date_obj = datetime.datetime.now()
             jalali_date=jdatetime.date.fromgregorian(date=date_obj)
             formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
             user_name=request.user
             manager=SysUser.objects.get(userId=request.user)
-            wos=Personnel.objects.filter(manager=manager)
+            wos=Personnel.objects.filter(manager=manager).order_by('title')
             return render(request, 'myapp/personel/att.html', {'user':user_name,'personnel_list': wos,'title':'مشخصات','section':'list_personel','dt':formatted_date})
     else:
         #return json response for ajax method
@@ -250,7 +249,6 @@ def save_personel_att(request):
             person=Personnel.objects.get(id=int(i['id']))
             hdate=DateJob.getTaskDate(i['hdate'])
             ezafekar=True if i['ezafe_kar'] == 'true' else False
-            print(i)
             try:
                 HozurGhiab.objects.create(person=person,\
                                         incom_time=i['inTimeValue'],outcome_time=i['outTimeValue'],\
@@ -300,12 +298,15 @@ def hozur_create(request):
         form = HozurForm(request.POST, files=request.FILES)
         return save_hozur_form(request, form, 'myapp/personel/partialHozurCreate.html')
     else:
-       
+        excluded_persons=request.GET.get('ids',None)
         form = HozurForm(initial={'hdate':datetime.datetime.now()})
+        ex_p=None
         # form=SysUserForm()
-        return save_hozur_form(request, form, 'myapp/personel/partialHozurCreate.html',datetime.datetime.now())
+        if(excluded_persons):
+            ex_p=excluded_persons.split(',')
+        return save_hozur_form(request, form, 'myapp/personel/partialHozurCreate.html',datetime.datetime.now(),exclueded_persons=ex_p)
 @login_required
-def save_hozur_form(request, form, template_name,reg_date):
+def save_hozur_form(request, form, template_name,reg_date,exclueded_persons=None):
 
 
     data = dict()
@@ -328,6 +329,8 @@ def save_hozur_form(request, form, template_name,reg_date):
     
     saloon_id=Personnel.objects.filter(manager__userId=request.user).first().saloon
     chips = Personnel.objects.exclude(manager__userId=request.user).filter(saloon=saloon_id)
+    if(exclueded_persons):
+        chips=chips.exclude(id__in=exclueded_persons)
     context = {'form': form ,'chips': chips}
 
 
@@ -354,6 +357,7 @@ def get_personel_calendar_info(request):
 def get_hozur_list_detail(request):
     data=dict()
     manager=request.GET.get('id',False)
+    manager_name=SysUser.objects.get(id=manager).fullName
     hdate=request.GET.get('hdate',False)
     if(hdate and manager):
         user_list_raw=HozurGhiab.objects.filter(registerd_by=manager,hdate=hdate).order_by('person__LName')
@@ -363,7 +367,7 @@ def get_hozur_list_detail(request):
         formatted_date = f"{jalali_date.year:04d}/{jalali_date.month:02d}/{jalali_date.day:02d}"
 
 
-    return render(request,'myapp/personel/hozurdetaillist.html',{'personnel_list': user_list_raw,'date':formatted_date})
+    return render(request,'myapp/personel/hozurdetaillist.html',{'personnel_list': user_list_raw,'date':formatted_date,'manager_name':manager_name,'hdate':hdate,'manager':manager})
 
 
 
@@ -468,11 +472,12 @@ def getTitle(request):
             (1, 'مقدمات',[1,2,3]),
             (2, 'پاساژ',[1,2,3]),
             (3, 'فبنیشر',[1,2,3]),
+            (26, 'ریبریکر',[1,2,3]),
             (4, 'سردافر',[1,2,3]),
             (5, 'رینگ',[1,2,3]),
             (6, 'لاکنی',[1,2,3]),
-            (7, 'دولاتاب',[1,2,3]),
             (8, 'اتوکنر',[1,2,3]),
+            (7, 'دولاتاب',[1,2,3]),
             (9, 'خدمات',[1,2,3]),
             (10, 'ssm',[1,2,3]),
             (11, 'هیت ست',[1,2,3]),
@@ -490,7 +495,7 @@ def getTitle(request):
             (23, 'پرس و خشک کن',[4]),
             (24, 'لیفتراک ریسندگی',[4]),
             (25, 'کاردینگ',[1,2,3]),
-            (26, 'ریبریکر',[1,2,3]),]
+            ]
       
     id_user=request.GET.get("id",False)
     if(id_user):
@@ -502,9 +507,22 @@ def getTitle(request):
             
         
     data=dict()
-    sorted_choices = sorted(choices, key=lambda x: x[1])
+    # sorted_choices = sorted(choices, key=lambda x: x[1])
+    sorted_choices = choices
+
     data['html_hozur_form']=render_to_string('myapp/personel/partialTitle.html',{'chips':sorted_choices})
     return JsonResponse(data)
      
 def show_hozur_success(request):
     return render(request,'myapp/personel/save_msg.html')
+@csrf_exempt
+def hozur_delete(request):
+    data=dict()
+    manager=request.GET.get('manager',False)
+    hdate=request.GET.get('hdate',False)
+    if(hdate and manager):
+        plist=HozurGhiab.objects.filter(registerd_by__id=manager,hdate=hdate)
+        for i in plist:
+            i.delete()
+        data['form_is_valid']=True
+    return JsonResponse(data)

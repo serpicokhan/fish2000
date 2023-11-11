@@ -32,24 +32,10 @@ var validate_data=function(){
   $('.data-row').each(function() {
     var $tds = $(this).find('td'); // Get all <td> elements in the current <tr>
     var id_=$(this).attr('data-url');
-    // Create an object to store the data for this row
-    // var rowData = {
-    //     tt:1,
-    //     title2: $('label[name="titletxt"]', this).data('val'), // Get the value of the "out_time_" input
-    //     id:$(this).attr('data-url'),
-    //     hdate:$('#selected_date').val(),
-    //     name: $tds.eq(0).text(), // Get the content of the first <td>
-    //     number: $tds.eq(1).text(), // Get the content of the second <td>
-    //     absentChecked: $(`input[name="absent_${id_}"]`, this).is(':checked'), // Check the status of the "absent_" checkbox
-    //     estehghaghiChecked: $(`input[name="estehghaghi_${id_}"]`, this).is(':checked'), // Check the status of the "estehghaghi_" checkbox
-    //     estelajiChecked: $(`input[name="estelaji_${id_}"]`, this).is(':checked'), // Check the status of the "estelaji_" checkbox
-    //     inTimeValue: $('input[name="in_time_"]', this).val(), // Get the value of the "in_time_" input
-    //     outTimeValue: $('input[name="out_time_"]', this).val(), // Get the value of the "out_time_" input
-
+    
 
 
     // };
-    console.log($('input[name="in_time_"]', this).val().length,'time');
     if($('input[name="in_time_"]', this).val().length === 0){
 
       is_valid= false;
@@ -64,7 +50,21 @@ var validate_data=function(){
     // Push the rowData object into the dataArray
     
 });
-console.log("here!");
+return is_valid;
+}
+var validate_title=function(){
+  // console.log(456);
+  var is_valid=true;
+  $('.data-row').each(function() {
+    var $tds = $(this).find('td'); // Get all <td> elements in the current <tr>
+    var id_=$(this).attr('data-url');
+    if($('.titletxt', this).data('val') === '--'){
+      is_valid= false;
+      return;
+    }
+    // Push the rowData object into the dataArray
+    
+});
 return is_valid;
 }
 var senddata=function(){
@@ -108,12 +108,18 @@ var senddata=function(){
             data: JSON.stringify(dataArray),
             contentType: 'application/json',
             beforeSend:function(x,y,z){
-              console.log("123");
+             
               if(!validate_data())
               {
                 console.log("false");
                 x.abort();
                 toastr.error("اطلاعات زمانی را کامل کنید");
+              }
+              if(!validate_title())
+              {
+                console.log("false");
+                x.abort();
+                toastr.error("عنوان شغلی برخی از پرسنل ناقص است، آن را تکمیل نمایید.");
               }
 
             },
@@ -202,8 +208,18 @@ $('#btn-send').on('click',senddata);
         // $("#part1").show();
     });
     $(".js-create-hozur2").click(function(){
+      const trElements = document.querySelectorAll('tr[data-ezafekar="true"]');
+
+// Create an array to store the data-url values
+      const dataUrlValues = [];
+
+      // Loop through each <tr> element and extract the data-url value
+      trElements.forEach(trElement => {
+        const dataUrl = trElement.getAttribute('data-url');
+        dataUrlValues.push(dataUrl);
+      });
         return $.ajax({
-            url: $(this).attr("data-url"),
+            url: $(this).attr("data-url")+`?ids=${dataUrlValues}`,
             type: 'get',
             dataType: 'json',
             beforeSend: function () {

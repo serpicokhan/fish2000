@@ -15,8 +15,13 @@ style="background-color: #eec8afbb;"
     <td>{% autoescape off %}{{personnel.get_estehghaghi}}{% endautoescape %}</td>
 
     <td>{% autoescape off %}{{personnel.get_estelaji}}{% endautoescape %}</td>
-   
+    {% if personnel.hozur %}
     <td>{{personnel.incom_time|time:'G:i:s'}}</td>
     <td>{{personnel.outcome_time|time:'G:i:s'}}</td>
+    {% else %}
+    <td><span>-----</span></td>
+    <td><span>----</span></td>
+    {% endif %}
+
 </tr>
 {% endfor %}
