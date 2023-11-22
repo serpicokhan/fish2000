@@ -145,17 +145,17 @@ $('#btn-send').on('click',senddata);
         // Uncheck all checkboxes in the same row
         $(this).closest('tr').find('.row-checkbox').not(this).prop('checked', false);
     });
-//     $('.normal-example').persianDatepicker({autoClose: true,initialValueType: 'gregorian', format: 'YYYY-MM-DD',
-//     altField: '#gregorianExampleAlt',
-//     altFormat: 'LLLL',
-//     calendar:{
-//         persian: {
-//             locale: 'fa'
-//         }
-//     },
+    $('.normal-example').persianDatepicker({autoClose: true,initialValueType: 'gregorian', format: 'YYYY-MM-DD',
+    altField: '#gregorianExampleAlt',
+    altFormat: 'LLLL',
+    calendar:{
+        persian: {
+            locale: 'fa'
+        }
+    },
   
 
-// });
+});
     $("#nextBtn").click(function(e) {
         e.preventDefault();
         const selectedDate = $("#selected_date").val();

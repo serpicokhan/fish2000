@@ -206,16 +206,16 @@ def view_att(request):
     if(request.method=='GET'):
         manager=SysUser.objects.get(userId=request.user)
         users=HozurGhiab.objects.filter(hdate=datetime.datetime.now().date(),registerd_by=manager)
-        if(users.count()>0):
-            return render(request, 'myapp/personel/try_tommarow.html', {'user':manager,'personnel_list': users,'title':'مشخصات','section':'list_personel'})
-        else:
-            date_obj = datetime.datetime.now()
-            jalali_date=jdatetime.date.fromgregorian(date=date_obj)
-            formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
-            user_name=request.user
-            manager=SysUser.objects.get(userId=request.user)
-            wos=Personnel.objects.filter(manager=manager).order_by('title')
-            return render(request, 'myapp/personel/att.html', {'user':user_name,'personnel_list': wos,'title':'مشخصات','section':'list_personel','dt':formatted_date})
+        # if(users.count()>0):
+        #     return render(request, 'myapp/personel/try_tommarow.html', {'user':manager,'personnel_list': users,'title':'مشخصات','section':'list_personel'})
+        # else:
+        date_obj = datetime.datetime.now()
+        jalali_date=jdatetime.date.fromgregorian(date=date_obj)
+        formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
+        user_name=request.user
+        manager=SysUser.objects.get(userId=request.user)
+        wos=Personnel.objects.filter(manager=manager).order_by('title')
+        return render(request, 'myapp/personel/att.html', {'user':user_name,'personnel_list': wos,'title':'مشخصات','section':'list_personel','dt':formatted_date})
     else:
         #return json response for ajax method
         data=dict()
