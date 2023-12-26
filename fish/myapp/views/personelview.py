@@ -1,7 +1,7 @@
 import csv
 from datetime import datetime
 
-from myapp.models import Personnel,PersonelFile,HozurGhiab,SysUser,Asset  # Replace 'myapp' with the name of your Django app
+from myapp.models import Personnel,PersonelFile,HozurGhiab,SysUser,Asset,AssetUser  # Replace 'myapp' with the name of your Django app
 from django.shortcuts import render
 from django.core.paginator import *
 from django.http import JsonResponse
@@ -48,12 +48,35 @@ def list_personel(request):
     wos=doPaging(request,list(books))
     group = Group.objects.get(name='manager')
     asset=Asset.objects.all()
-    
+
 
 # Get all users belonging to the group
     users_in_group = group.user_set.all()
     users=SysUser.objects.filter(userId__in=users_in_group).order_by('fullName')
     return render(request, 'myapp/personel/personelList.html', {'fishes': wos,'title':'مشخصات','section':'list_personel','manager':users,'asset':asset,'asset_param':asset_param,'manager_param':manager_param})
+@permission_required('myapp.view_personnnel')
+def list_personel_breif(request):
+    asset_param=request.GET.get('asset_param',False)
+    manager_param=request.GET.get('manager_param',False)
+
+    books=Personnel.objects.all()
+    if(asset_param and asset_param!='-1'):
+        books=books.filter(saloon=asset_param)
+    if(manager_param  and asset_param!='-1'):
+        books=books.filter(manager=manager_param)
+    wos=doPaging(request,list(books))
+    group = Group.objects.get(name='manager')
+    asset=Asset.objects.all()
+
+
+# Get all users belonging to the group
+    users_in_group = group.user_set.all()
+    users=SysUser.objects.filter(userId__in=users_in_group).order_by('fullName')
+    managers_in_saloon_1 = AssetUser.objects.filter(AssetUserAssetId__id=1).values("AssetUserUserId")
+
+    # Retrieve the manager objects
+    managers = SysUser.objects.filter(id__in=managers_in_saloon_1)
+    return render(request, 'myapp/personel/managerList.html', {'fishes': wos,'title':'مشخصات','section':'list_personel','manager':managers,'asset':asset,'asset_param':asset_param,'manager_param':manager_param})
 
 @permission_required('myapp.view_personnnel')
 def view_profile(request,id):
@@ -149,7 +172,7 @@ def insert_personel_data_from_csv(request):
                 TelegramNumber=row['TelegramNumber'],
             )
             personnel.save()
-    return HttpResponse('saved succesfully') 
+    return HttpResponse('saved succesfully')
 def login_to_load_file(request):
     return render(request,'myapp/personel/login.html',{})
 def file_upload_doc(request):
@@ -168,7 +191,7 @@ def update_personel(request,id):
         if(form.is_valid):
             form.save()
             return list_personel(request)
-   
+
 @csrf_exempt
 def handle_file_upload(request):
 
@@ -180,7 +203,7 @@ def handle_file_upload(request):
         btn_name=request.GET.get("btnName",False)
         btn_type=request.GET.get("btnType",False)
         p=Personnel.objects.get(NCode='{}'.format(code_meli))
-        
+
         # New directory where the files will be saved (named with the current date and time)
         # upload_directory = f'media/uploads/{current_datetime}/'
         # os.makedirs(upload_directory, exist_ok=True)
@@ -236,7 +259,7 @@ def view_att(request):
             data['result'] = render_to_string('myapp/personel/partialatt2.html', {
                 'personnel_list': users
             })
-            
+
         return JsonResponse(data)
 @login_required(login_url="/userlogin/")
 @csrf_exempt
@@ -267,8 +290,8 @@ def save_personel_att(request):
                 o.registerd_by=registerd_user
                 o.is_ezafekar=ezafekar
                 o.save()
-                
-           
+
+
         dt['form_is_valid']=True
 
         return JsonResponse(dt)
@@ -311,14 +334,14 @@ def save_hozur_form(request, form, template_name,reg_date,exclueded_persons=None
 
     data = dict()
     if (request.method == 'POST'):
-        if form.is_valid():               
-         
-          
+        if form.is_valid():
+
+
             form.save(commit=False)
             form.instance.registerd_by=request.user.person_hozur
             data['form_is_valid'] = True
             books = HozurGhiab.objects.filter(hdate=reg_date,registerd_by=request.user.person_hozur)
-            
+
             data['html_hozur_list'] = render_to_string('myapp/personel/partialatt2.html', {
                 'personnel_list': books
             })
@@ -326,7 +349,7 @@ def save_hozur_form(request, form, template_name,reg_date,exclueded_persons=None
             data['form_is_valid'] = False
             print(form.errors)
 
-    
+
     saloon_id=Personnel.objects.filter(manager__userId=request.user).first().saloon
     chips = Personnel.objects.exclude(manager__userId=request.user).filter(saloon=saloon_id)
     if(exclueded_persons):
@@ -351,7 +374,7 @@ def get_personel_calendar_info(request):
                 'start': '{} 10:00:00'.format(i[1]),\
                 'className': "bg-primary",\
                 'id':i[0]})
-    
+
     return JsonResponse(data,safe=False)
 @permission_required('myapp.view_personnnel')
 def get_hozur_list_detail(request):
@@ -412,14 +435,14 @@ def search_personel(request):
     # books=Personnel.objects.all()
     # wos=doPaging(request,(books))
     names = q.split()
-    
+
     group = Group.objects.get(name='manager')
     asset=Asset.objects.all()
     users_in_group = group.user_set.all()
     users=SysUser.objects.filter(userId__in=users_in_group).order_by('fullName')
     data=dict()
     # if(q and len(names)==1):
-    # #   
+    # #
     #     books=Personnel.objects.filter(Q(FName__contains=q)|Q(LName__contains=q)|Q(PNumber=q)|Q(NCode=q))
     #     wos=doPaging(request,list(books))
 
@@ -442,7 +465,7 @@ def search_personel(request):
     # for word in search_words:
     #     if ' ' in word:
     #         query |= Q(FName__exact=word) | Q(LName__exact=word)
-    
+
 
 # Perform the query on your model
     if(len(search_words)>0):
@@ -462,9 +485,9 @@ def search_personel(request):
 
 
 
-        
 
-   
+
+
     return render(request,'myapp/personel/personelList.html',{'fishes':wos,'title':'مشخصات','section':'list_personel','manager':users,'asset':asset,'q':q,'manager_param':manager_param,'asset_param':asset_param})
 def getTitle(request):
     choices=[
@@ -496,23 +519,23 @@ def getTitle(request):
             (24, 'لیفتراک ریسندگی',[4]),
             (25, 'کاردینگ',[1,2,3]),
             ]
-      
+
     id_user=request.GET.get("id",False)
     if(id_user):
         x=Personnel.objects.get(id=id_user).saloon.id
-        choices = [(id, title, diff_id) for id, title, diff_id in choices if x in diff_id]      
-    
+        choices = [(id, title, diff_id) for id, title, diff_id in choices if x in diff_id]
 
 
-            
-        
+
+
+
     data=dict()
     # sorted_choices = sorted(choices, key=lambda x: x[1])
     sorted_choices = choices
 
     data['html_hozur_form']=render_to_string('myapp/personel/partialTitle.html',{'chips':sorted_choices})
     return JsonResponse(data)
-     
+
 def show_hozur_success(request):
     return render(request,'myapp/personel/save_msg.html')
 @csrf_exempt

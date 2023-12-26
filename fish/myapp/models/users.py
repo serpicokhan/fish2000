@@ -151,7 +151,7 @@ class Personnel(models.Model):
     TelegramNumber = models.CharField(max_length=11, blank=True, null=True)
     Shift = models.CharField(max_length=2, blank=True, null=True)
     title = models.IntegerField(
-        
+
         choices=[
             (0, 'سرشیفت'),
             (1, 'مقدمات'),
@@ -180,15 +180,15 @@ class Personnel(models.Model):
             (24, 'لیفتراک ریسندگی'),
             (25, 'کاردینگ'),
             (26, 'ریبریکر'),
-      
 
 
-            
+
+
         ],
         null=True,blank=True
     )
 
-    
+
 
 
     def __str__(self):
@@ -248,26 +248,26 @@ class HozurGhiab(models.Model):
             (24, 'لیفتراک ریسندگی'),
             (25, 'کاردینگ'),
             (26, 'ریبریکر'),
-      
 
 
-            
+
+
         ],null=True,blank=True)
     def get_hozur(self):
         if(self.hozur):
-            
+
             return '{}'.format('<i class="fa fa-check" aria-hidden="true"></i>')
         else:
             return '{}'.format('<i class="fa fa-close"></i>')
     def get_estehghaghi(self):
             if(self.estehghaghi):
-                
+
                 return '{}'.format('<i class="fa fa-check" aria-hidden="true"></i>')
             else:
                 return '{}'.format('<i class="fa fa-close"></i>')
     def get_estelaji(self):
         if(self.estelaji):
-            
+
             return '{}'.format('<i class="fa fa-check" aria-hidden="true"></i>')
         else:
             return '{}'.format('<i class="fa fa-close"></i>')

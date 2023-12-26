@@ -120,6 +120,8 @@ class Asset(models.Model):
 class AssetUser(models.Model):
         AssetUserAssetId=models.ForeignKey(Asset,on_delete=models.CASCADE,blank=True,null=True,verbose_name="دارایی")
         AssetUserUserId=models.ForeignKey(SysUser,on_delete=models.CASCADE,blank=True,null=True,verbose_name="کاربر ")
+        def __str__(self):
+            return f"{self.AssetUserAssetId.assetName}:{self.AssetUserUserId.fullName}"
         class Meta:
             db_table="assetuser"
 

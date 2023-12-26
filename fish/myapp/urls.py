@@ -11,7 +11,7 @@ urlpatterns = [
 
     path('', index, name='index'),
     path('userlogin/', user_login2, name='user_login'),
-    
+
     url(r'^User/$',list_user,name='list_user'),
     url(r'^User/create/$', user_create, name='user_create'),
     url(r'^User/(?P<id>\d+)/update/$', user_update, name='user_update'),
@@ -37,6 +37,7 @@ urlpatterns = [
     url(r'^personel/files/(?P<id>\d+)/remove$', remove_person_file, name='remove_person_file'),
     url(r'^personel/files/$', login_to_load_file, name='login_to_load_file'),
     url(r'^personel/$', list_personel, name='list_personel'),
+    url(r'^personel/brief$', list_personel_breif, name='list_personel_breif'),
     url(r'^personel/(?P<id>\d+)/profile$', view_profile, name='view_profile'),
     url(r'^personel/Att$', view_att, name='view_att'),
     url(r'^personel/SaveInfo/$', save_personel_att, name='save_personel_att'),
