@@ -11,6 +11,7 @@ urlpatterns = [
 
     path('', index, name='index'),
     path('userlogin/', user_login2, name='user_login'),
+    path('managerlogin/', user_login3, name='user_login3'),
 
     url(r'^User/$',list_user,name='list_user'),
     url(r'^User/create/$', user_create, name='user_create'),

@@ -25,6 +25,7 @@ from django.contrib.auth.models import User,Group
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from jdatetime import datetime as dt
+from django.contrib.auth.models import User, Group
 def doPaging(request,books):
     page=request.GET.get('page',1)
     paginator = Paginator(books, 60)
@@ -293,6 +294,25 @@ def user_login2(request):
     else:
         form = LoginForm()
     return render(request, 'myapp/personel/managerlogin.html', {'form': form})
+def user_login3(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+        user = authenticate(request,
+        username=cd['username'],
+        password=cd['password'])
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return redirect('list_personel_breif')
+            else:
+                return HttpResponse('Disabled account')
+        else:
+            return HttpResponse('Invalid login')
+    else:
+        form = LoginForm()
+    return render(request, 'myapp/personel/managerlogin.html', {'form': form})
 @login_required
 def hozur_create(request):
     if (request.method == 'POST'):
@@ -531,9 +551,13 @@ def get_personel_breig_info(request):
     makan=request.GET.get("makan",False)
     data=dict()
     result=[]
+    group = Group.objects.get(name='manager')
+
+
+    users_in_group = User.objects.filter(groups=group)
     if(makan):
         managers_in_saloon_1 = AssetUser.objects.filter(AssetUserAssetId__id=makan).values("AssetUserUserId")
-        managers = SysUser.objects.filter(id__in=managers_in_saloon_1)
+        managers = SysUser.objects.filter(id__in=managers_in_saloon_1,userId__in=users_in_group)
 
         date_obj = datetime.datetime.now()
         jalali_date=jdatetime.date.fromgregorian(date=date_obj)
@@ -552,15 +576,12 @@ def get_personel_breig_info(request):
     return JsonResponse(data)
 
 
-@permission_required('myapp.view_personnnel')
+@login_required(login_url="/managerlogin/")
 def list_personel_breif(request):
-
-    asset=Asset.objects.all()
-
-
-# Get all users belonging to the group
-
-
-    # Retrieve the manager objects
-    
+    asset=None
+    if(request.user.username!="admin"):
+        asset_id=AssetUser.objects.filter(AssetUserUserId__userId=request.user).values('AssetUserAssetId')
+        asset=Asset.objects.filter(id__in=asset_id)
+    else:
+        asset=Asset.objects.all()
     return render(request, 'myapp/personel/managerList.html', {'title':'مشخصات','section':'list_personel','asset':asset})
