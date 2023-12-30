@@ -1,5 +1,6 @@
 (function($) {
     "use strict"
+
     // Daterange picker
     $('.input-daterange-datepicker').daterangepicker({
         format: 'jYYYY/jMM/jDD',
