@@ -26,6 +26,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from jdatetime import datetime as dt
 from django.contrib.auth.models import User, Group
+from django.db.models import Sum, F, When, Case, Value, TimeField
+from decimal import Decimal
 def doPaging(request,books):
     page=request.GET.get('page',1)
     paginator = Paginator(books, 60)
@@ -547,6 +549,21 @@ def hozur_delete(request):
             i.delete()
         data['form_is_valid']=True
     return JsonResponse(data)
+def format_duration(total_time):
+    # Convert microseconds to a timedelta object
+    total_time_microseconds = int(total_time)
+
+    # Convert microseconds to a timedelta object
+    total_timedelta = timedelta(microseconds=total_time_microseconds)
+
+    # Extract hours, minutes, and seconds from the timedelta
+    hours = total_timedelta // timedelta(hours=1)
+    minutes = (total_timedelta % timedelta(hours=1)) // timedelta(minutes=1)
+    seconds = (total_timedelta % timedelta(minutes=1)) // timedelta(seconds=1)
+
+    return hours, minutes, seconds
+
+    return hours, minutes, seconds
 def get_personel_breig_info(request):
     makan=request.GET.get("makan",False)
     data=dict()
@@ -565,7 +582,13 @@ def get_personel_breig_info(request):
 
         for i in managers:
             users=HozurGhiab.objects.filter(hdate='2023-12-29',registerd_by=i)
-            result.append({'shiftId':i.id,'shiftName':i.fullName,'personel_count':users.count(),'abset_count':users.filter(hozur=False).count(),'ezafe_kar':users.filter(is_ezafekar=True).count()})
+            total_time=users.filter(is_ezafekar=True).aggregate(total_time=Sum(F('outcome_time') - F('incom_time'), output_field=TimeField()))
+
+            if(total_time['total_time']):
+                formatted_hours, formatted_minutes, formatted_seconds = format_duration(Decimal(total_time['total_time']))
+            else:
+                formatted_hours=0
+            result.append({'shiftId':i.id,'shiftName':i.fullName,'personel_count':users.count(),'abset_count':users.filter(hozur=False).count(),'ezafe_kar':formatted_hours,'ezafe_karcount':users.filter(is_ezafekar=True).count()})
         data['result'] = render_to_string('myapp/personel/partialManagerList.html', {
                 'personnel_list': result
             })
