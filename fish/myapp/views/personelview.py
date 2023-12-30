@@ -312,7 +312,7 @@ def user_login3(request):
             return HttpResponse('Invalid login')
     else:
         form = LoginForm()
-    return render(request, 'myapp/personel/managerlogin.html', {'form': form})
+    return render(request, 'myapp/personel/directorlogin.html', {'form': form})
 @login_required
 def hozur_create(request):
     if (request.method == 'POST'):
