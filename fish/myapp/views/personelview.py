@@ -55,29 +55,6 @@ def list_personel(request):
     users_in_group = group.user_set.all()
     users=SysUser.objects.filter(userId__in=users_in_group).order_by('fullName')
     return render(request, 'myapp/personel/personelList.html', {'fishes': wos,'title':'مشخصات','section':'list_personel','manager':users,'asset':asset,'asset_param':asset_param,'manager_param':manager_param})
-@permission_required('myapp.view_personnnel')
-def list_personel_breif(request):
-    asset_param=request.GET.get('asset_param',False)
-    manager_param=request.GET.get('manager_param',False)
-
-    books=Personnel.objects.all()
-    if(asset_param and asset_param!='-1'):
-        books=books.filter(saloon=asset_param)
-    if(manager_param  and asset_param!='-1'):
-        books=books.filter(manager=manager_param)
-    wos=doPaging(request,list(books))
-    group = Group.objects.get(name='manager')
-    asset=Asset.objects.all()
-
-
-# Get all users belonging to the group
-    users_in_group = group.user_set.all()
-    users=SysUser.objects.filter(userId__in=users_in_group).order_by('fullName')
-    managers_in_saloon_1 = AssetUser.objects.filter(AssetUserAssetId__id=1).values("AssetUserUserId")
-
-    # Retrieve the manager objects
-    managers = SysUser.objects.filter(id__in=managers_in_saloon_1)
-    return render(request, 'myapp/personel/managerList.html', {'fishes': wos,'title':'مشخصات','section':'list_personel','manager':managers,'asset':asset,'asset_param':asset_param,'manager_param':manager_param})
 
 @permission_required('myapp.view_personnnel')
 def view_profile(request,id):
@@ -550,3 +527,40 @@ def hozur_delete(request):
             i.delete()
         data['form_is_valid']=True
     return JsonResponse(data)
+def get_personel_breig_info(request):
+    makan=request.GET.get("makan",False)
+    data=dict()
+    result=[]
+    if(makan):
+        managers_in_saloon_1 = AssetUser.objects.filter(AssetUserAssetId__id=makan).values("AssetUserUserId")
+        managers = SysUser.objects.filter(id__in=managers_in_saloon_1)
+
+        date_obj = datetime.datetime.now()
+        jalali_date=jdatetime.date.fromgregorian(date=date_obj)
+        formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
+
+        for i in managers:
+            users=HozurGhiab.objects.filter(hdate='2023-12-29',registerd_by=i)
+            result.append({'shiftId':i.id,'shiftName':i.fullName,'personel_count':users.count(),'abset_count':users.filter(hozur=False).count(),'ezafe_kar':users.filter(is_ezafekar=True).count()})
+        data['result'] = render_to_string('myapp/personel/partialManagerList.html', {
+                'personnel_list': result
+            })
+        data['header'] = render_to_string('myapp/personel/manager_list_header.html', {
+                'personnel_list': result
+            })
+
+    return JsonResponse(data)
+
+
+@permission_required('myapp.view_personnnel')
+def list_personel_breif(request):
+
+    asset=Asset.objects.all()
+
+
+# Get all users belonging to the group
+
+
+    # Retrieve the manager objects
+    
+    return render(request, 'myapp/personel/managerList.html', {'title':'مشخصات','section':'list_personel','asset':asset})

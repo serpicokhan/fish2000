@@ -38,6 +38,7 @@ urlpatterns = [
     url(r'^personel/files/$', login_to_load_file, name='login_to_load_file'),
     url(r'^personel/$', list_personel, name='list_personel'),
     url(r'^personel/brief$', list_personel_breif, name='list_personel_breif'),
+    url(r'^personel/brief/getInfo$', get_personel_breig_info, name='get_personel_breig_info'),
     url(r'^personel/(?P<id>\d+)/profile$', view_profile, name='view_profile'),
     url(r'^personel/Att$', view_att, name='view_att'),
     url(r'^personel/SaveInfo/$', save_personel_att, name='save_personel_att'),

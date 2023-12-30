@@ -1,38 +1,31 @@
-{% for i in clist %}
+
 <tr>
     <td>تعداد پرسنل موجود در لیست</td>
     <td>
-      0
+      {{personnel_list.0.personel_count}}
     </td>
-    <td>0</td>
-    <td>0
+    <td>{{personnel_list.1.personel_count}}</td>
+    <td>  {{personnel_list.2.personel_count}}
     </td>
 
 </tr>
 <tr>
     <td>تعداد پرسنل مرخصی غیبت استعلاجی</td>
     <td>
-      0
+      {{personnel_list.0.abset_count}}
     </td>
-    <td>0</td>
-    <td>0
+    <td>{{personnel_list.1.abset_count}}</td>
+    <td>  {{personnel_list.2.abset_count}}
     </td>
 
 </tr>
 <tr>
     <td>اضافه کار استفاده شده بر حسب ساعت</td>
     <td>
-      0
+      {{personnel_list.0.ezafe_kar}}
     </td>
-    <td>0</td>
-    <td>0
+    <td>  {{personnel_list.1.ezafe_kar}}</td>
+    <td>  {{personnel_list.2.ezafe_kar}}
     </td>
 
 </tr>
-{% empty %}
-<tr>
-    <td colspan="4" class="text-center">اطلاعاتی یافت نشد</td>
-
-
-</tr>
-{% endfor %}
