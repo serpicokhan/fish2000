@@ -1,6 +1,6 @@
 (function($) {
   $(".load_data").click(function(){
-    const url=`/personel/brief/getInfo?makan=${$("#asset_id").val()}`;
+    const url=`/personel/brief/getInfo?makan=${$("#asset_id").val()}&date=${$("#datepicker-default").val().replaceAll('/','-')}`;
     $.ajax({
       url:url,
       type:'get',
@@ -14,8 +14,8 @@
         $("#thead_company").html(data.header);
         $("#tbody-company").empty();
         $("#tbody-company").html(data.result);
-          $("#preloader").hide();
-          $("#main-wrapper").show();
+        $("#preloader").hide();
+        $("#main-wrapper").show();
 
 
 

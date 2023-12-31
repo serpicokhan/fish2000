@@ -6,6 +6,14 @@ from myapp.utils import *
 
 class DateJob:
     @staticmethod
+    def get_yesterday_greg():
+        today = datetime.datetime.now()
+
+        # Calculate yesterday's date
+        yesterday = today - timedelta(days=1)
+        return yesterday
+
+    @staticmethod
     def getQDate(dt1):
         cyear=jdatetime.datetime.now().year
         S=('z','p','t','b')

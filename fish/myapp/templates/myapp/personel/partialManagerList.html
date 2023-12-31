@@ -2,10 +2,10 @@
 <tr>
     <td>تعداد پرسنل موجود در لیست</td>
     <td>
-      {{personnel_list.0.personel_count}}
+    <a href="{% url 'get_hozur_list_detail' %}?id={{personnel_list.0.shiftId}}&hdate={{personnel_list.0.hdate}}" target="_blank">{{personnel_list.0.personel_count}}</a>
     </td>
-    <td>{{personnel_list.1.personel_count}}</td>
-    <td>  {{personnel_list.2.personel_count}}
+    <td>  <a href="{% url 'get_hozur_list_detail' %}?id={{personnel_list.1.shiftId}}&hdate={{personnel_list.1.hdate}}" target="_blank">{{personnel_list.1.personel_count}}</a>  </td>
+    <td>    <a href="{% url 'get_hozur_list_detail' %}?id={{personnel_list.2.shiftId}}&hdate={{personnel_list.2.hdate}}" target="_blank">{{personnel_list.2.personel_count}}</a>
     </td>
 
 </tr>

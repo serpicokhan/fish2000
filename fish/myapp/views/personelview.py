@@ -376,7 +376,7 @@ def get_personel_calendar_info(request):
                 'id':i[0]})
 
     return JsonResponse(data,safe=False)
-@permission_required('myapp.view_personnnel')
+@permission_required('myapp.view_personel')
 def get_hozur_list_detail(request):
     data=dict()
     manager=request.GET.get('id',False)
@@ -441,17 +441,7 @@ def search_personel(request):
     users_in_group = group.user_set.all()
     users=SysUser.objects.filter(userId__in=users_in_group).order_by('fullName')
     data=dict()
-    # if(q and len(names)==1):
-    # #
-    #     books=Personnel.objects.filter(Q(FName__contains=q)|Q(LName__contains=q)|Q(PNumber=q)|Q(NCode=q))
-    #     wos=doPaging(request,list(books))
 
-    # elif(q and len(names)>1):
-    #     # first_name, last_name = names
-    #     books=Personnel.objects.filter(Q(FName__contains=names[0]) & Q(LName__contains=names[1]))
-    #     wos=doPaging(request,list(books))
-
-    #     # print(Personnel.objects.filter(Q(FName__contains=first_name) & Q(LName__contains=last_name)).query)
     search_words = q.split()
 
 # Initialize an empty Q object to build the query dynamically
@@ -562,33 +552,33 @@ def format_duration(total_time):
     seconds = (total_timedelta % timedelta(minutes=1)) // timedelta(seconds=1)
 
     return hours, minutes, seconds
-
     return hours, minutes, seconds
 def get_personel_breig_info(request):
     makan=request.GET.get("makan",False)
+    mydt=request.GET.get("date",False)
+    hdate=DateJob.get_yesterday_greg()
+    if(mydt):
+        hdate=DateJob.getTaskDate(mydt)
     data=dict()
     result=[]
     group = Group.objects.get(name='manager')
-
-
     users_in_group = User.objects.filter(groups=group)
     if(makan):
         managers_in_saloon_1 = AssetUser.objects.filter(AssetUserAssetId__id=makan).values("AssetUserUserId")
         managers = SysUser.objects.filter(id__in=managers_in_saloon_1,userId__in=users_in_group)
-
         date_obj = datetime.datetime.now()
         jalali_date=jdatetime.date.fromgregorian(date=date_obj)
         formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
 
         for i in managers:
-            users=HozurGhiab.objects.filter(hdate='2023-12-29',registerd_by=i)
+            users=HozurGhiab.objects.filter(hdate=hdate,registerd_by=i)
             total_time=users.filter(is_ezafekar=True).aggregate(total_time=Sum(F('outcome_time') - F('incom_time'), output_field=TimeField()))
 
             if(total_time['total_time']):
                 formatted_hours, formatted_minutes, formatted_seconds = format_duration(Decimal(total_time['total_time']))
             else:
                 formatted_hours=0
-            result.append({'shiftId':i.id,'shiftName':i.fullName,'personel_count':users.count(),'abset_count':users.filter(hozur=False).count(),'ezafe_kar':formatted_hours,'ezafe_karcount':users.filter(is_ezafekar=True).count()})
+            result.append({'hdate':hdate.strftime('%Y-%m-%d'),'shiftId':i.id,'shiftName':i.fullName,'personel_count':users.count(),'abset_count':users.filter(hozur=False).count(),'ezafe_kar':formatted_hours,'ezafe_karcount':users.filter(is_ezafekar=True).count()})
         data['result'] = render_to_string('myapp/personel/partialManagerList.html', {
                 'personnel_list': result
             })
@@ -601,10 +591,16 @@ def get_personel_breig_info(request):
 
 @login_required(login_url="/managerlogin/")
 def list_personel_breif(request):
+    # Get today's date
+
+    yesterday=DateJob.get_yesterday_greg()
+    jalali_date=jdatetime.date.fromgregorian(date=yesterday)
+    formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
+
     asset=None
     if(request.user.username!="admin"):
         asset_id=AssetUser.objects.filter(AssetUserUserId__userId=request.user).values('AssetUserAssetId')
         asset=Asset.objects.filter(id__in=asset_id)
     else:
         asset=Asset.objects.all()
-    return render(request, 'myapp/personel/managerList.html', {'title':'مشخصات','section':'list_personel','asset':asset})
+    return render(request, 'myapp/personel/managerList.html', {'title':'مشخصات','section':'list_personel','asset':asset,'date':formatted_date})
