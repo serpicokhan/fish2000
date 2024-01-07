@@ -8,7 +8,7 @@
 <div class="row">
     <div class="col-xl-12 col-xxl-12 col-lg-12">
         <div class="row">
-            
+
             <form action="{% url 'create_profile' %}" method='POST'>
                 {% csrf_token %}
             <div class="col-xl-12">
@@ -29,7 +29,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                     
+
                             <div class="mb-5">
                                 <div class="title mb-4"><span
                                         class="fs-18 text-black font-w600">اطلاعات</span></div>
@@ -65,35 +65,42 @@
                                         <div class="form-group">
                                             <label>کد پرسنلی</label>
                                             {% render_field form.PNumber class='form-control' placeholder='کد پرسنلی' %}
-                                            
-                                           
+
+
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6">
                                         <div class="form-group">
                                             <label>کد ملی </label>
                                             {% render_field form.NCode class='form-control' placeholder='کد ملی' %}
-                                            
+
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6">
                                         <div class="form-group">
                                             <label>عنوان شغل </label>
                                             {% render_field form.title class='form-control' placeholder='کد ملی' %}
-                                            
+
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6">
+                                        <div class="form-group">
+                                            <label>وضعیت </label>
+                                            {% render_field form.isActive %}
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                           
-                      
+
+
                     </div>
                 </div>
             </div>
         </form>
         </div>
     </div>
-    
+
 </div>
 
 {% load static %}

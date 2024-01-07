@@ -93,7 +93,41 @@ $(function () {
 
     }
   });
+  $("#table-company").on("click",'.js-profile-delete',function(){
+    // sweetAlert("Oops...", "Something went wrong !!", "error") ;
+    // swal({ title: "Are you sure dsadas delete ?", text: "You will not be able to recover this imaginary file !!", type: "warning",
+    // showCancelButton: !0, confirmButtonColor: "#DD6B55", confirmButtonText: "Yes, delete it !!", cancelButtonText: "No, cancel it !!",
+    //  closeOnConfirm: !1, closeOnCancel: !1 },
+    //  function (e) { e ? swal("Deleted !!", "Hey, your imaginary file has been deleted !!", "success") :
+    // swal("Cancelled !!", "Hey, your imaginary file is safe !!", "error") });
 
+    a=confirm("غیر فعال؟");
+    if(a){
+      // console.log($(this).closest('tr'));
+      var url=$(this).attr('data-url');
+      var row=$(this).closest('tr');
+      $.ajax({
+        url:url,
+        type:'post',
+        success:function(data){
+          if(data.valid){
+          swal({
+            title: "تعلیق",
+            text:"",
+            type: "info",
+
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "معلق شود؟",
+
+          });
+          row.remove();
+        }
+
+        }
+      });
+
+    }
+  });
 $("#asset_id").click(function(){
   // alert(123);
   $.ajax({

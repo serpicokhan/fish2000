@@ -218,7 +218,7 @@ def view_att(request):
         formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
         user_name=request.user
         manager=SysUser.objects.get(userId=request.user)
-        wos=Personnel.objects.filter(manager=manager).order_by('title')
+        wos=Personnel.objects.filter(manager=manager,isActive=True).order_by('title')
         return render(request, 'myapp/personel/att.html', {'user':user_name,'personnel_list': wos,'title':'مشخصات','section':'list_personel','dt':formatted_date})
     else:
         #return json response for ajax method
@@ -236,7 +236,7 @@ def view_att(request):
         else:
             user_name=request.user
             manager=SysUser.objects.get(userId=request.user)
-            wos=Personnel.objects.filter(manager=manager)
+            wos=Personnel.objects.filter(manager=manager,isActive=True)
             data['result'] = render_to_string('myapp/personel/partialatt2.html', {
                 'personnel_list': users
             })
@@ -423,6 +423,15 @@ def delete_personel(request,id):
         if(request.method=="POST"):
             p1=Personnel.objects.get(id=id)
             p1.delete()
+            data=dict()
+            data["valid"]=True
+            return JsonResponse(data)
+@csrf_exempt
+def suspend_personel(request,id):
+        if(request.method=="POST"):
+            p1=Personnel.objects.get(id=id)
+            p1.isActive=False
+            p1.save()
             data=dict()
             data["valid"]=True
             return JsonResponse(data)

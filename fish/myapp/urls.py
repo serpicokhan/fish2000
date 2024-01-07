@@ -47,6 +47,7 @@ urlpatterns = [
 
     url(r'^personel/LoadDate/$', view_att, name='view_att'),
     url(r'^personel/(?P<id>\d+)/Delete$', delete_personel, name='delete_personel'),
+    url(r'^personel/(?P<id>\d+)/Suspend$', suspend_personel, name='suspend_personel'),
     url(r'^Hozur/create/$', hozur_create, name='hozur_create'),
     url(r'^Hozur/GetTitles/$', getTitle, name='getTitle'),
     url(r'^Hozur/Calendar/$', show_hozur_calendar, name='show_hozur_calendar'),
