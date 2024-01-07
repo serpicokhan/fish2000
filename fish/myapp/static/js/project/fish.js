@@ -93,7 +93,7 @@ $(function () {
 
     }
   });
-  $("#table-company").on("click",'.js-profile-delete',function(){
+  $("#table-company").on("click",'.js-profile-suspend',function(){
     // sweetAlert("Oops...", "Something went wrong !!", "error") ;
     // swal({ title: "Are you sure dsadas delete ?", text: "You will not be able to recover this imaginary file !!", type: "warning",
     // showCancelButton: !0, confirmButtonColor: "#DD6B55", confirmButtonText: "Yes, delete it !!", cancelButtonText: "No, cancel it !!",
