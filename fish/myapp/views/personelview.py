@@ -26,7 +26,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from jdatetime import datetime as dt
 from django.contrib.auth.models import User, Group
-from django.db.models import Sum, F, When, Case, Value, TimeField
+from django.db.models import F, Sum, ExpressionWrapper, fields, Case, When, Value
+
 from decimal import Decimal
 def doPaging(request,books):
     page=request.GET.get('page',1)
@@ -581,10 +582,56 @@ def get_personel_breig_info(request):
 
         for i in managers:
             users=HozurGhiab.objects.filter(hdate=hdate,registerd_by=i)
-            total_time=users.filter(is_ezafekar=True).aggregate(total_time=Sum(F('outcome_time') - F('incom_time'), output_field=TimeField()))
+            # total_time=users.filter(is_ezafekar=True).aggregate(total_time=Sum(F('outcome_time') - F('incom_time'), output_field=TimeField()))
+            total_time = users.filter(is_ezafekar=True).annotate(
+            adjusted_outcome=ExpressionWrapper(
+                    Case(
+                        When(incom_time__gt=F('outcome_time'), then=F('outcome_time') + datetime.timedelta(hours=12)),
+                        default=F('outcome_time'),
+                        output_field=fields.DateTimeField(),
+                    ),
+                    output_field=fields.DateTimeField()
+                ),
+                adjusted_income=ExpressionWrapper(
+                    Case(
+                        When(incom_time__gt=F('outcome_time'), then=F('incom_time') - datetime.timedelta(hours=12)),
+                        default=F('incom_time'),
+                        output_field=fields.DateTimeField(),
+                    ),
+                    output_field=fields.DateTimeField()
+                ),
+                normal_adjusted_outcome=ExpressionWrapper(
+                    F('outcome_time'),
+                    output_field=fields.DateTimeField()
+                ),
+                normal_adjusted_income=ExpressionWrapper(
+                    F('incom_time'),
+                    output_field=fields.DateTimeField()
+                ),
+                total_adjusted_time=ExpressionWrapper(
+                    Case(
+                        When(incom_time__gt=F('outcome_time'), then=F('adjusted_outcome') - F('adjusted_income')),
+                        default=F('normal_adjusted_outcome') - F('normal_adjusted_income'),
+                        output_field=fields.DurationField(),
+                    ),
+                    output_field=fields.DurationField()
+                )
+            ).aggregate(total_time=Sum('total_adjusted_time'))
+
+            # Access the total time
+            total_time_value = total_time['total_time']
 
             if(total_time['total_time']):
-                formatted_hours, formatted_minutes, formatted_seconds = format_duration(Decimal(total_time['total_time']))
+                total_time_duration = total_time['total_time']
+
+                # # Calculate total hours, including days as hours
+                total_hours = total_time_duration.total_seconds() // 3600
+                #
+                # # Get remaining minutes and seconds after removing complete hours
+                remaining_mins = (total_time_duration.total_seconds() % 3600)/60
+                formatted_hours, formatted_minutes = divmod(remaining_mins, 60)
+
+                formatted_hours = f"{total_hours:.0f}:{remaining_mins:.0f}"
             else:
                 formatted_hours=0
             result.append({'hdate':hdate.strftime('%Y-%m-%d'),'shiftId':i.id,'shiftName':i.fullName,'personel_count':users.count(),'abset_count':users.filter(hozur=False).count(),'ezafe_kar':formatted_hours,'ezafe_karcount':users.filter(is_ezafekar=True).count()})
