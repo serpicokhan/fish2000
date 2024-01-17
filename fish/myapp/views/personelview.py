@@ -352,7 +352,7 @@ def save_hozur_form(request, form, template_name,reg_date,exclueded_persons=None
 
 
     saloon_id=Personnel.objects.filter(manager__userId=request.user).first().saloon
-    chips = Personnel.objects.exclude(manager__userId=request.user).filter(saloon=saloon_id)
+    chips = Personnel.objects.exclude(manager__userId=request.user,isActive=False).filter(saloon=saloon_id)
     if(exclueded_persons):
         chips=chips.exclude(id__in=exclueded_persons)
     context = {'form': form ,'chips': chips}
