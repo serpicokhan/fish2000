@@ -420,6 +420,16 @@ $('#btn-send').on('click',senddata);
     //     <td><input type="time" name="out_time_" step="60"></td>
     // </tr>`);
     $("#tbody-company").append(tbl_str);
+    selectedChips=[];
+    selectedIds=[];
+     selectedPNum=null;
+     selectedPNums=[];
+
+     selectedTitle=null;
+     selectedTitles=[]
+     selectedChips = [];
+     selectedTitleTexts=[];
+     
     $("#modal-company").modal("hide");
 
       });
