@@ -384,7 +384,7 @@ def get_hozur_list_detail(request):
     manager_name=SysUser.objects.get(id=manager).fullName
     hdate=request.GET.get('hdate',False)
     if(hdate and manager):
-        user_list_raw=HozurGhiab.objects.filter(registerd_by=manager,hdate=hdate).order_by('person__LName')
+        user_list_raw=HozurGhiab.objects.filter(registerd_by=manager,hdate=hdate,person__isActive=True).order_by('person__LName')
         user_list=[]
         date_obj = datetime.datetime.strptime(hdate, "%Y-%m-%d")
         jalali_date=jdatetime.date.fromgregorian(date=date_obj)
