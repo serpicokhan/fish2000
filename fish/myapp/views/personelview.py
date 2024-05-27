@@ -45,7 +45,7 @@ def list_personel(request):
     asset_param=request.GET.get('asset_param',False)
     manager_param=request.GET.get('manager_param',False)
 
-    books=Personnel.objects.all()
+    books=Personnel.objects.filter(isActive=True)
     if(asset_param and asset_param!='-1'):
         books=books.filter(saloon=asset_param)
     if(manager_param  and asset_param!='-1'):
@@ -469,11 +469,11 @@ def search_personel(request):
 
 # Perform the query on your model
     if(len(search_words)>0):
-        results = Personnel.objects.filter(query)
+        results = Personnel.objects.filter(query,isActive=True)
         wos=doPaging(request,list(results))
 
     else:
-        books=Personnel.objects.all()
+        books=Personnel.objects.filter(isActive=True)
         wos=doPaging(request,list(books))
     if(asset_param!='-1'):
         books=books.filter(saloon=asset_param)

@@ -3,7 +3,7 @@ from myapp.models import *
 from django.conf import settings
 import logging
 from django.forms import ModelForm, inlineformset_factory
-
+from django.contrib.auth.models import Group
 class SysUserForm(forms.ModelForm):
     #CustomerId = forms.ModelChoiceField(queryset=Customer.objects.all())
 
