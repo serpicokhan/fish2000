@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+{% load static %}
+{% load humanize %}
+<html lang="fa">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="" />
+    <meta name="author" content="" />
+    <meta name="robots" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="پنل مدیریتی - داشبورد 1" />
+    <meta property="og:title" content="پنل مدیریتی - داشبورد 1" />
+    <meta property="og:description" content="پنل مدیریتی - داشبورد 1" />
+    <meta property="og:image"  />
+    <meta name="format-detection" content="telephone=no">
+    <title>فیش حقوق {{mah}} ماه {{sal}}</title>
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon.png' %}">
+    <link href="{% static 'vendor/jqvmap/css/jqvmap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'vendor/chartist/css/chartist.min.css' %}">
+    <!-- Vectormap -->
+    <link href="{% static 'vendor/jqvmap/css/jqvmap.min.css'%}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-select/dist/css/bootstrap-select.min.css'%}" rel="stylesheet">
+    <link href="{% static 'vendor/owl-carousel/owl.carousel.css'%}" rel="stylesheet">
+    <link href="{% static '2.0/lineicons.css'%}" rel="stylesheet">
+    <link href="{% static 'css/style.css'%}" rel="stylesheet">
+    <link href="{% static 'vendor/dropzone/dist/dropzone.css' %}" rel="stylesheet" type="text/css"/>
+    <script src="{% static 'js/jquery-2.1.1.js' %}"></script>
+    <style>
+        table.table-bordered{
+    border:1px solid blue;
+    margin-top:20px;
+  }
+table.table-bordered > thead > tr > th{
+    border:1px solid blue;
+}
+table.table-bordered > tbody > tr > td{
+    border:1px solid blue;
+}
+table.table-bordered > tfoot > tr > th{
+    border:1px solid blue;
+}
+        /* Custom CSS to add margins */
+        .custom-margin {
+          margin: 50px auto; /* Adjust the margin values as needed */
+        }
+
+body{
+    font-size: 0.70rem;
+    background-color: white;
+}
+.bold-text {
+      font-weight: bold;
+    }
+    .centered-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+  }
+.custom-table td {
+      padding: 0.20rem; /* Adjust the padding value as needed */
+    }
+    @media print {
+      body {
+        width: 148mm; /* A5 width */
+        height: 210mm; /* A5 height */
+        margin: 0; /* Reset margins */
+      }
+
+      @page {
+        size: A5 landscape; /* Set A5 size and landscape orientation */
+        margin: 5mm; /* Adjust margin as needed */
+      }
+    }
+      </style>
+
+    <script type="text/javascript">
+      window.RAYCHAT_TOKEN = "f498c874-46cd-43bb-844f-d6a2c3e25a0b";
+        (function () {
+          d = document;
+          s = d.createElement("script");
+          s.src = "https://widget-react.raychat.io/install/widget.js";
+          s.async = 1;
+          d.getElementsByTagName("head")[0].appendChild(s);
+        })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.0/pdf.min.js"></script>
+
+</head>
+<body>
+    <div class="container mt-4">
+
+        <div class="row justify-content-center custom-margin">
+          <div class="col-lg-9">
+            <div class="row">
+                <div class="col-md-4"> <h6>{{person.name}} </h6> </div>
+                <div class="col-md-4"> <h6>{{mah}} ماه {{sal}} </h6> </div>
+                <div class="col-md-4"> <h6>کد پرسنلی:{{person.pid}}</h6> </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-4'></div>
+              <div class='col-lg-4'>
+                <a href="{% get_media_prefix %}{{pdf}}"><button type="button" class="btn btn-secondary mt-4">دانلود <span class="btn-icon-right"><i class="fa fa-envelope"></i></span>
+                </button></a>
+              </div>
+              <div class='col-lg-4'>
+              </div>
+            </div>
+
+
+
+
+
+
+          </div>
+        </div>
+
+      </div>
+
+
+
+<!-- Bootstrap JS (Optional - for certain Bootstrap functionalities) -->
+<script src="{% static 'vendor/global/global.min.js'%}"></script>
+<!-- Chart piety plugin files -->
+<!-- Dashboard 1 -->
+<script src="{% static 'js/deznav-init.js'%}"></script>
+
+</body>
+</html>

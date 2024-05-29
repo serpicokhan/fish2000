@@ -34,6 +34,8 @@ import os
 from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import permission_required
+from PyPDF2 import PdfReader, PdfWriter
+from django.core.files.base import ContentFile
 def doPaging(request,books):
     page=request.GET.get('page',1)
     paginator = Paginator(books, 8)
@@ -74,23 +76,47 @@ def search_fish(request):
         })
     return JsonResponse(data)
 def details_fish(request):
-    #
-    # books = Message.objects.filter().order_by('-id')
-    # wos=doPaging(request,(books))
     code_meli=request.POST.get('code_meli',False)
     code=request.POST.get('code',False)
-    mah1=request.POST.get('mah1',1)
+    mah=request.POST.get('mah1',1)
     sal=request.POST.get('year',1403)
+    if(int(sal)==1403):
+        try:
 
-    print("mah1",mah1)
-    month=['','فروردین','ارديبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند']
+            person=Person.objects.get(pid=code,codemeli=code_meli)
 
-    wos=Fish.objects.filter(code=code,code_meli=code_meli,mah=mah1,sal=sal)
-    if(wos.count()>0):
-        karkard=int(wos[0].monthly_hoghugh)/int(wos[0].daily_hoghugh)
 
-        return render(request, 'myapp/fish/fishDetal.html', {'c': wos[0],'karkard':karkard,'title':'صندوق دریافت','section':'list_mail','mah':month[int(wos[0].mah)],'sal':wos[0].sal})
-    return render(request, 'myapp/page-error-404.html', {'ss':''})
+
+
+            month=['','فروردین','ارديبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند']
+            sal2=Salary.objects.get(mah=mah,sal=1403,person=person)
+
+
+            context = {
+                    # 'zipped_lists': zipped_lists,
+                    'person':person,
+                    # 'last1':last1,
+                    # 'last2':last2,
+                    # 'last3':last3,
+                    'sal':sal,
+                    'mah':month[int(mah)],
+                    'pdf':sal2.fishFile
+                }
+            return render(request, 'myapp/fish/fishdetaile2.html', context)
+        except Exception as e:
+                print(e)
+                return render(request, 'myapp/page-error-404.html', {'ss':''})
+    else:
+
+        print("mah1",mah1)
+        month=['','فروردین','ارديبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند']
+
+        wos=Fish.objects.filter(code=code,code_meli=code_meli,mah=mah,sal=sal)
+        if(wos.count()>0):
+            karkard=int(wos[0].monthly_hoghugh)/int(wos[0].daily_hoghugh)
+
+            return render(request, 'myapp/fish/fishDetal.html', {'c': wos[0],'karkard':karkard,'title':'صندوق دریافت','section':'list_mail','mah':month[int(wos[0].mah)],'sal':wos[0].sal})
+        return render(request, 'myapp/page-error-404.html', {'ss':''})
 @login_required
 @transaction.atomic
 def fish_upload(request):
@@ -192,3 +218,172 @@ def register_shekayat(reuqest,id):
         fish.save()
 
         return HttpResponseRedirect(reverse('index'))
+def find_next_person_index(current_row,ws):
+            next_row=current_row
+            for row in range(current_row + 1, ws.max_row + 1):
+                cell_value = ws.cell(row=row, column=13).value
+                if cell_value and isinstance(cell_value, str):  # Check if the cell has a non-empty string value
+                    next_row = row
+                    break
+            return next_row
+def find_person_by_id(pid_str,name,codemeli):
+    if(len(codemeli)==0):
+        codemeli='1111111111'
+
+    person_exists = Person.objects.filter(pid=pid_str).exists()
+    if person_exists:
+        return Person.objects.get(pid=pid_str)
+    else:
+
+        return Person.objects.create(pid=pid_str,name=name,codemeli=codemeli)
+def get_file_extension(file):
+            file_name = file.name
+            return file_name.split('.')[-1] if '.' in file_name else None
+def processfile(request):
+    month=request.GET.get('month',False)
+    mah=month
+    sal=request.GET.get('sal',False)
+
+    msg_pdf=MessageFile2.objects.filter(sal=sal,mah=mah)[0]
+    msg_excel=MessageFile.objects.filter(sal=sal,mah=mah)[0]
+
+    workbook = load_workbook(filename='media/'+msg_excel.msgFile.name)
+    ws = workbook.active
+    m_col=ws.max_column
+    m_row = ws.max_row
+    index=0
+    for i in range(1, m_row + 1):
+            # print(ws[i][0].value)
+            try:
+                value = ws[i][13].value
+                if(value):
+                        print(value,',',ws[i+5][25].value)
+                        pid=find_person_by_id(ws[i+5][25].value,ws[i+8][25].value +' '+ ws[i+11][25].value,'11111')
+                        next_person_index=find_next_person_index(i,ws)
+
+                        if(i<next_person_index):
+                           p=Salary.objects.get(index=index,mah=mah,sal=sal)
+                           p.person=pid
+                           p.save()
+
+                        elif(i==next_person_index):
+                            p=Salary.objects.get(index=index,mah=mah,sal=sal)
+                            p.person=pid
+                            p.save()
+                        index+=1
+
+            except Exception as ex:
+                 print(ex)
+                 print(index)
+
+
+
+    data=dict()
+    data["form_is_valid"]=True
+    return JsonResponse(data)
+
+
+
+@login_required
+def fish_upload2(request):
+
+
+    if request.method == 'POST':
+
+        my_file=request.FILES.get('file')
+
+        month=request.POST.get('month_select',False)
+
+        mah=month
+        sal=request.POST.get('sal_select',False)
+        if(get_file_extension(my_file)=="pdf"):
+            MessageFile2.objects.filter(mah=mah,sal=sal).delete()
+            msg=MessageFile2.objects.create(msgFile=my_file,mah=mah,sal=sal)
+            with open('media/'+msg.msgFile.name, 'rb') as pdf_file:
+                pdf_reader = PdfReader(pdf_file)
+
+                # Iterate through each page and save as a separate PDF
+                for page_num in range(len(pdf_reader.pages)):
+                    pdf_writer = PdfWriter()
+                    pdf_writer.add_page(pdf_reader.pages[page_num])
+
+                    # Save each page as a separate PDF file
+                    output_filename = f'page_{page_num + 1}.pdf'  # Naming each page file
+                    with open(output_filename, 'wb') as output_file:
+                        pdf_writer.write(output_file)
+                        # Salary.objects.create(index=page_num,fishFile=output_file,mah=mah,sal=sal)
+                    with open(output_filename, 'rb') as output_file:
+                        # Read the content of the file
+                        file_content = output_file.read()
+                        salary_instance = Salary.objects.create(index=page_num, mah=mah, sal=sal)
+                        salary_instance.fishFile.save('desired_filename.pdf', ContentFile(file_content), save=True)
+                        # print(f"Page {page_num + 1} saved as '{output_filename}'")
+        elif(get_file_extension(my_file)=="xlsx"):
+            # print("Excel file")
+            MessageFile.objects.filter(mah=mah,sal=sal).delete()
+            msg=MessageFile.objects.create(msgFile=my_file,mah=mah,sal=sal)
+            # with open('media/'+msg.msgFile.name, 'rb') as pdf_file:
+            #     pdf_reader = PdfReader(pdf_file)
+
+            #     # Iterate through each page and save as a separate PDF
+            #     for page_num in range(len(pdf_reader.pages)):
+            #         pdf_writer = PdfWriter()
+            #         pdf_writer.add_page(pdf_reader.pages[page_num])
+
+            #         # Save each page as a separate PDF file
+            #         output_filename = f'page_{page_num + 1}.pdf'  # Naming each page file
+            #         with open(output_filename, 'wb') as output_file:
+            #             pdf_writer.write(output_file)
+            #         print(f"Page {page_num + 1} saved as '{output_filename}'")
+        # workbook = load_workbook(filename='media/'+msg.msgFile.name)
+        # ws = workbook.active
+        # m_col=ws.max_column
+        # m_row = ws.max_row
+        # for i in range(1, m_row + 1):
+        #     try:
+        #         value = ws[i][10].value
+        #         if(value):
+        #             # pid=find_person_by_id(ws[i][0].value,value)
+        #             next_person_index=find_next_person_index(i,ws)
+
+        #             if(i<next_person_index):
+        #                 upload_file_async.delay(i,next_person_index,mah,sal,msg.msgFile.name,ws[i][0].value,value)
+        #             elif(i==next_person_index):
+        #                 upload_file_async.delay(i,m_row,mah,sal,msg.msgFile.name,ws[i][0].value,value)
+
+
+
+        #     except Exception as e:
+        #         print(e)  # it was a string, not an int.
+        #     workbook.close()
+
+
+
+        data=dict()
+        data["id"]=msg.id
+        return JsonResponse(data)
+        # return HttpResponse('')
+    return JsonResponse({'post':'fasle'})
+@login_required
+@csrf_exempt
+def fish_delete(request,id):
+    comp1 = get_object_or_404(MessageFile, id=id)
+    page=request.GET.get('page',1)
+    data = dict()
+    if (request.method == 'POST'):
+        Salary.objects.filter(sal=comp1.sal,mah=comp1.mah).delete()
+        MessageFile2.objects.filter(mah=comp1.mah,sal=comp1.sal).delete()
+        comp1.delete()
+        data['form_is_valid'] = True  # This is just to play along with the existing code
+        books=MessageFile.objects.all().order_by('-sal','-mah')
+        wos=doPaging(request,books)
+
+        #Tasks.objects.filter(woId=id).update(workorder=id)
+        data['html_wo_list'] = render_to_string('myapp/fish/partialFishList.html', {
+            'fishes': wos,
+            'perms': PermWrapper(request.user),
+            'page':page
+        })
+
+
+    return JsonResponse(data)

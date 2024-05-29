@@ -21,8 +21,12 @@ urlpatterns = [
     url(r'^Mail/$',list_mail,name='list_mail'),
     url(r'^Fish/$',list_fish,name='list_fish'),
     url(r'^Fish/Search/$',search_fish,name='search_fish'),
-    url(r'^Fish/Upload$',fish_upload,name='fish_upload'),
+    url(r'^Fish/Upload$',fish_upload2,name='fish_upload'),
     url(r'^Fish/Create$',fish_create,name='fish_create'),
+    url(r'^Fish/Process$',processfile,name='processfile'),
+    url(r'^Fish/(?P<id>\d+)/Delete$',fish_delete,name='fish_delete'),
+
+
     url(r'^Fish/Detail$',details_fish,name='details_fish'),
     url(r'^Mail/create/$', mail_create, name='mail_create'),
     url(r'^Fish/(?P<id>\d+)/shekayat/$', register_shekayat, name='register_shekayat'),

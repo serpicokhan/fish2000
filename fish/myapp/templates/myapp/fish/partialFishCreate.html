@@ -58,7 +58,7 @@
                         {% csrf_token %}
                         <div class="form-group">
 
-                            <select class="form-control " name="month_select">
+                            <select class="form-control " name="month_select" id="month_select">
                               <option value="1">فروردین</option>
                               <option value="2">اردیبهشت</option>
                               <option value="3">خرداد</option>
@@ -73,10 +73,10 @@
                         </div>
                         <div class="form-group">
 
-                            <select class="form-control " name="sal_select">
+                            <select class="form-control " name="sal_select" id="sal_select">
                               <option value="1401">1401</option>
                               <option value="1402">1402</option>
-                              <option value="1403">1403</option>
+                              <option value="1403" selected>1403</option>
                               <option value="1404">1404</option>
 
                             </select>
@@ -92,6 +92,11 @@
                       </button>
 
                   </div>
+                  <div class="text-left mt-4">
+                <button class="btn btn-primary btn-sl-sm mr-2 process_fish" type="button" data-url="{% url 'processfile' %}"><span class="mr-2"><i class="fa fa-paper-plane"></i></span>پردازش لیست
+                </button>
+
+            </div>
               </div>
           </div>
       </div>

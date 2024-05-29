@@ -98,3 +98,18 @@ class Fish(models.Model):
     class Meta:
         db_table="fish"
         ordering = ('date_added',)
+class Person(models.Model):
+    pid = models.CharField(max_length=20)
+    name = models.CharField(max_length=100)
+    codemeli = models.CharField(max_length=100)
+class Salary(models.Model):
+    sal = models.IntegerField()
+    index = models.IntegerField()
+    mah = models.IntegerField()
+    person = models.ForeignKey(Person,related_name='salary_person', on_delete=models.CASCADE,null=True,blank=True)
+    # fish = models.FileField(upload_to=file_upload_path)
+    fishFile=models.FileField(upload_to='documents/%Y/%m/%d',max_length=200)
+    def __str__(self):
+        return f"Salary for {self.person.name}"
+    class Meta:
+        db_table="salary2"
