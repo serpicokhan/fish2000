@@ -39,7 +39,7 @@ class Fish(models.Model):
     def get_majmu_kosurat_simple(self):
         return self.get_bime_simple()+(float(self.maliat)+float(self.pool_khurd)+float(self.vame_dakheli)+float(self.vame_aghsati)+float(self.bime_azad)+float(self.bime_takmili)+float(self.kasre_hoghugh)+float(self.jarime)+float(self.mosaede))
     def get_pardakhtha_simple(self):
-        return (float(self.monthly_hoghugh)+float(self.ovlad)+float(self.ovlad_moavaghe)+float(self.randeman)+float(self.maskan)+float(self.bon)+float(self.ezafe_kar)+float(self.paye_sanavat)+float(self.jome_kari)+float(self.ravande_mahe_ghabl)+float(self.nobate_kari)+float(self.eslahe_hoghugh)+float(self.padash))
+        return (float(self.haghe_tahol)+float(self.monthly_hoghugh)+float(self.ovlad)+float(self.ovlad_moavaghe)+float(self.randeman)+float(self.maskan)+float(self.bon)+float(self.ezafe_kar)+float(self.paye_sanavat)+float(self.jome_kari)+float(self.ravande_mahe_ghabl)+float(self.nobate_kari)+float(self.eslahe_hoghugh)+float(self.padash))
     def get_daryafti(self):
         return "{:,.0f}".format(self.get_pardakhtha_simple()-self.get_majmu_kosurat_simple())
 
@@ -84,6 +84,8 @@ class Fish(models.Model):
     name = models.CharField("نام",max_length=255,blank=True,null=True)
     code_meli = models.CharField("کد ملی",max_length=255,blank=True,null=True)
     code = models.CharField("کد پرسنلی",max_length=255,blank=True,null=True)
+    haghe_tahol=models.CharField("حق تاهل",max_length=255,default='0')
+    tatil_kar=models.CharField("تعطیل کار",max_length=255,default='0')
 
 
 

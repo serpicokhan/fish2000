@@ -80,7 +80,7 @@ def details_fish(request):
     code_meli=request.POST.get('code_meli',False)
     code=request.POST.get('code',False)
     mah1=request.POST.get('mah1',1)
-    sal=request.POST.get('year',1)
+    sal=request.POST.get('year',1403)
 
     print("mah1",mah1)
     month=['','فروردین','ارديبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند']
@@ -159,6 +159,8 @@ def fish_upload(request):
                     item_new.morakhasi=i[2] if(i[2]) else 0
                     item_new.ezafe_kar_time=i[1] if(i[1]) else 0
                     item_new.estelaji=i[0] if(i[0]) else 0
+                    item_new.haghe_tahol=i[36] if(i[36]) else 0
+                    item_new.tatil_kar=i[35] if(i[35]) else 0
                     item_new.save()
 
 

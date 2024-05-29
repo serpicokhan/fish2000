@@ -83,10 +83,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'django215_bobbie',
-        'USER': 'django215_bobbie',
-        'PASSWORD': 'sXURg78YW3FP',
-        'HOST': 'services.irn3.chabokan.net',
-        'PORT': '5596',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 
