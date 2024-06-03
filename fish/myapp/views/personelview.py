@@ -384,7 +384,7 @@ def get_hozur_list_detail(request):
     manager_name=SysUser.objects.get(id=manager).fullName
     hdate=request.GET.get('hdate',False)
     if(hdate and manager):
-        user_list_raw=HozurGhiab.objects.filter(registerd_by=manager,hdate=hdate,person__isActive=True).order_by('person__LName')
+        user_list_raw=HozurGhiab.objects.filter(registerd_by=manager,hdate=hdate).order_by('person__LName')
         user_list=[]
         date_obj = datetime.datetime.strptime(hdate, "%Y-%m-%d")
         jalali_date=jdatetime.date.fromgregorian(date=date_obj)
@@ -660,3 +660,17 @@ def list_personel_breif(request):
     else:
         asset=Asset.objects.all()
     return render(request, 'myapp/personel/managerList.html', {'title':'مشخصات','section':'list_personel','asset':asset,'date':formatted_date})
+def list_assets(request):
+    # Get today's date
+    data=dict()
+    yesterday=DateJob.get_yesterday_greg()
+    jalali_date=jdatetime.date.fromgregorian(date=yesterday)
+    formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
+
+    asset=None
+    assets=Asset.objects.all()
+    asset_list=[]
+    for i in asset:
+        asset_list.append({'id':i.id,'name':i.assetName})
+
+    return JsonResponse(data)
