@@ -643,6 +643,96 @@ def get_personel_breig_info(request):
             })
 
     return JsonResponse(data)
+def get_personel_breig_info_all(request):
+
+    mydt=request.GET.get("date",False)
+    hdate=DateJob.get_yesterday_greg()
+    if(mydt):
+        hdate=DateJob.getTaskDate(mydt)
+
+    main_data=dict()
+
+    group = Group.objects.get(name='manager')
+    users_in_group = User.objects.filter(groups=group)
+    assets=Asset.objects.all()
+    for makan in assets:
+        if(makan):
+            data=dict()
+            result=[]
+            managers_in_saloon_1 = AssetUser.objects.filter(AssetUserAssetId=makan).values("AssetUserUserId")
+            managers = SysUser.objects.filter(id__in=managers_in_saloon_1,userId__in=users_in_group)
+            date_obj = datetime.datetime.now()
+            jalali_date=jdatetime.date.fromgregorian(date=date_obj)
+            formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
+
+            for i in managers:
+                users=HozurGhiab.objects.filter(hdate=hdate,registerd_by=i)
+                # total_time=users.filter(is_ezafekar=True).aggregate(total_time=Sum(F('outcome_time') - F('incom_time'), output_field=TimeField()))
+                total_time = users.filter(is_ezafekar=True).annotate(
+                adjusted_outcome=ExpressionWrapper(
+                        Case(
+                            When(incom_time__gt=F('outcome_time'), then=F('outcome_time') + datetime.timedelta(hours=12)),
+                            default=F('outcome_time'),
+                            output_field=fields.DateTimeField(),
+                        ),
+                        output_field=fields.DateTimeField()
+                    ),
+                    adjusted_income=ExpressionWrapper(
+                        Case(
+                            When(incom_time__gt=F('outcome_time'), then=F('incom_time') - datetime.timedelta(hours=12)),
+                            default=F('incom_time'),
+                            output_field=fields.DateTimeField(),
+                        ),
+                        output_field=fields.DateTimeField()
+                    ),
+                    normal_adjusted_outcome=ExpressionWrapper(
+                        F('outcome_time'),
+                        output_field=fields.DateTimeField()
+                    ),
+                    normal_adjusted_income=ExpressionWrapper(
+                        F('incom_time'),
+                        output_field=fields.DateTimeField()
+                    ),
+                    total_adjusted_time=ExpressionWrapper(
+                        Case(
+                            When(incom_time__gt=F('outcome_time'), then=F('adjusted_outcome') - F('adjusted_income')),
+                            default=F('normal_adjusted_outcome') - F('normal_adjusted_income'),
+                            output_field=fields.DurationField(),
+                        ),
+                        output_field=fields.DurationField()
+                    )
+                ).aggregate(total_time=Sum('total_adjusted_time'))
+
+                # Access the total time
+                total_time_value = total_time['total_time']
+
+                if(total_time['total_time']):
+                    total_time_duration = total_time['total_time']
+
+                    # # Calculate total hours, including days as hours
+                    total_hours = total_time_duration.total_seconds() // 3600
+                    #
+                    # # Get remaining minutes and seconds after removing complete hours
+                    remaining_mins = (total_time_duration.total_seconds() % 3600)/60
+                    formatted_hours, formatted_minutes = divmod(remaining_mins, 60)
+
+                    formatted_hours = f"{total_hours:.0f}:{remaining_mins:.0f}"
+                else:
+                    formatted_hours=0
+                result.append({'hdate':hdate.strftime('%Y-%m-%d'),'shiftId':i.id,'shiftName':i.fullName,'personel_count':users.count(),'abset_count':users.filter(hozur=False).count(),'ezafe_kar':formatted_hours,'ezafe_karcount':users.filter(is_ezafekar=True).count()})
+            data['result'] = render_to_string('myapp/personel/partialManagerList0.html', {
+                    'personnel_list': result
+
+                })
+
+            data['header'] = render_to_string('myapp/personel/manager_list_header.html', {
+                    'personnel_list': result
+                })
+            main_data[makan.id]=data
+    print(main_data)
+
+
+    return JsonResponse(main_data)
 
 
 @login_required(login_url="/managerlogin/")
@@ -660,6 +750,21 @@ def list_personel_breif(request):
     else:
         asset=Asset.objects.all()
     return render(request, 'myapp/personel/managerList.html', {'title':'مشخصات','section':'list_personel','asset':asset,'date':formatted_date})
+@login_required(login_url="/managerlogin/")
+def list_personel_breif_all(request):
+    # Get today's date
+
+    yesterday=DateJob.get_yesterday_greg()
+    jalali_date=jdatetime.date.fromgregorian(date=yesterday)
+    formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
+
+    asset=None
+    if(request.user.username!="admin"):
+        asset_id=AssetUser.objects.filter(AssetUserUserId__userId=request.user).values('AssetUserAssetId')
+        asset=Asset.objects.filter(id__in=asset_id)
+    else:
+        asset=Asset.objects.all()
+    return render(request, 'myapp/personel/managerList0.html', {'title':'مشخصات','section':'list_personel','asset':asset,'date':formatted_date})
 def list_assets(request):
     # Get today's date
     data=dict()
@@ -667,10 +772,11 @@ def list_assets(request):
     jalali_date=jdatetime.date.fromgregorian(date=yesterday)
     formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
 
-    asset=None
+    assets=None
     assets=Asset.objects.all()
     asset_list=[]
-    for i in asset:
+    for i in assets:
         asset_list.append({'id':i.id,'name':i.assetName})
+    data['assets']=asset_list
 
-    return JsonResponse(data)
+    return JsonResponse(asset_list,safe=False)

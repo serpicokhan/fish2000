@@ -1,0 +1,76 @@
+
+
+<div class="col-lg-12">
+<div class="card">
+  <div class="card-header">
+
+  </div>
+
+  <div class="card-body">
+
+    <div class=" ml-0 ml-sm-4 ml-sm-0">
+
+      <div class="table-responsive">
+        <table class="table table-bordered verticle-middle table-responsive-sm table-striped">
+          <thead >
+            <tr>
+              <th scope="col">عنوان</th>
+            <th>{{personnel_list.0.shiftName}}</th>
+            <th>{{personnel_list.1.shiftName}}</th>
+            <th>{{personnel_list.2.shiftName}}</th>
+
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr>
+                <td>تعداد پرسنل موجود در لیست</td>
+                <td>
+                <a href="{% url 'get_hozur_list_detail' %}?id={{personnel_list.0.shiftId}}&hdate={{personnel_list.0.hdate}}" target="_blank">{{personnel_list.0.personel_count}}</a>
+                </td>
+                <td>  <a href="{% url 'get_hozur_list_detail' %}?id={{personnel_list.1.shiftId}}&hdate={{personnel_list.1.hdate}}" target="_blank">{{personnel_list.1.personel_count}}</a>  </td>
+                <td>    <a href="{% url 'get_hozur_list_detail' %}?id={{personnel_list.2.shiftId}}&hdate={{personnel_list.2.hdate}}" target="_blank">{{personnel_list.2.personel_count}}</a>
+                </td>
+
+            </tr>
+            <tr>
+                <td>تعداد پرسنل مرخصی غیبت استعلاجی</td>
+                <td>
+                  {{personnel_list.0.abset_count}}
+                </td>
+                <td>{{personnel_list.1.abset_count}}</td>
+                <td>  {{personnel_list.2.abset_count}}
+                </td>
+
+            </tr>
+            <tr>
+                <td>اضافه کار استفاده شده بر حسب ساعت</td>
+                <td>
+                  {{personnel_list.0.ezafe_kar}}
+                </td>
+                <td>  {{personnel_list.1.ezafe_kar}}</td>
+                <td>  {{personnel_list.2.ezafe_kar}}
+                </td>
+
+            </tr>
+            <tr>
+                <td>تعداد نفرات اضافه کار</td>
+                <td>
+                  {{personnel_list.0.ezafe_karcount}}
+                </td>
+                <td>  {{personnel_list.1.ezafe_karcount}}</td>
+                <td>  {{personnel_list.2.ezafe_karcount}}
+                </td>
+
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+      <!-- panel -->
+
+    </div>
+  </div>
+</div>
+</div>
