@@ -54,6 +54,26 @@
 $("#printbtn").click(function(){
   printDiv('datarow');
 });
+$("#itabtn").click(function(){
+  const url=`/api/v1/ita`;
+
+  $.ajax({
+    url:url,
+    type:'get',
+    beforeSend:function(){
+
+    },
+    success:function(data){
+
+      console.log("success",data);
+
+
+
+
+    }
+  });
+
+});
   $(".load_data").click(function(){
     const url=`/personel/brief/getInfo/All?date=${$("#datepicker-default").val().replaceAll('/','-')}`;
     $.ajax({

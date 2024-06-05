@@ -45,7 +45,9 @@ def list_personel(request):
     asset_param=request.GET.get('asset_param',False)
     manager_param=request.GET.get('manager_param',False)
 
+    #books=Personnel.objects.all()
     books=Personnel.objects.filter(isActive=True)
+
     if(asset_param and asset_param!='-1'):
         books=books.filter(saloon=asset_param)
     if(manager_param  and asset_param!='-1'):
@@ -352,7 +354,7 @@ def save_hozur_form(request, form, template_name,reg_date,exclueded_persons=None
 
 
     saloon_id=Personnel.objects.filter(manager__userId=request.user).first().saloon
-    chips = Personnel.objects.exclude(manager__userId=request.user,isActive=False).filter(saloon=saloon_id)
+    chips = Personnel.objects.exclude(manager__userId=request.user).filter(saloon=saloon_id,isActive=True)
     if(exclueded_persons):
         chips=chips.exclude(id__in=exclueded_persons)
     context = {'form': form ,'chips': chips}
@@ -385,6 +387,8 @@ def get_hozur_list_detail(request):
     hdate=request.GET.get('hdate',False)
     if(hdate and manager):
         user_list_raw=HozurGhiab.objects.filter(registerd_by=manager,hdate=hdate).order_by('person__LName')
+        #user_list_raw=HozurGhiab.objects.filter(registerd_by=manager,hdate=hdate,person__isActive=True).order_by('person__LName')
+
         user_list=[]
         date_obj = datetime.datetime.strptime(hdate, "%Y-%m-%d")
         jalali_date=jdatetime.date.fromgregorian(date=date_obj)
@@ -643,6 +647,23 @@ def get_personel_breig_info(request):
             })
 
     return JsonResponse(data)
+
+
+@login_required(login_url="/managerlogin/")
+def list_personel_breif(request):
+    # Get today's date
+
+    yesterday=DateJob.get_yesterday_greg()
+    jalali_date=jdatetime.date.fromgregorian(date=yesterday)
+    formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
+
+    asset=None
+    if(request.user.username!="admin"):
+        asset_id=AssetUser.objects.filter(AssetUserUserId__userId=request.user).values('AssetUserAssetId')
+        asset=Asset.objects.filter(id__in=asset_id)
+    else:
+        asset=Asset.objects.all()
+    return render(request, 'myapp/personel/managerList.html', {'title':'مشخصات','section':'list_personel','asset':asset,'date':formatted_date})
 def get_personel_breig_info_all(request):
 
     mydt=request.GET.get("date",False)
@@ -719,7 +740,7 @@ def get_personel_breig_info_all(request):
                     formatted_hours = f"{total_hours:.0f}:{remaining_mins:.0f}"
                 else:
                     formatted_hours=0
-                result.append({'hdate':hdate.strftime('%Y-%m-%d'),'shiftId':i.id,'shiftName':i.fullName,'personel_count':users.count(),'abset_count':users.filter(hozur=False).count(),'ezafe_kar':formatted_hours,'ezafe_karcount':users.filter(is_ezafekar=True).count()})
+                result.append({'hdate':jdatetime.date.fromgregorian(date=hdate).strftime('%Y-%m-%d'),'makan':makan.assetName,shiftId':i.id,'shiftName':i.fullName,'personel_count':users.count(),'abset_count':users.filter(hozur=False).count(),'ezafe_kar':formatted_hours,'ezafe_karcount':users.filter(is_ezafekar=True).count()})
             data['result'] = render_to_string('myapp/personel/partialManagerList0.html', {
                     'personnel_list': result
 
@@ -733,23 +754,6 @@ def get_personel_breig_info_all(request):
 
 
     return JsonResponse(main_data)
-
-
-@login_required(login_url="/managerlogin/")
-def list_personel_breif(request):
-    # Get today's date
-
-    yesterday=DateJob.get_yesterday_greg()
-    jalali_date=jdatetime.date.fromgregorian(date=yesterday)
-    formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
-
-    asset=None
-    if(request.user.username!="admin"):
-        asset_id=AssetUser.objects.filter(AssetUserUserId__userId=request.user).values('AssetUserAssetId')
-        asset=Asset.objects.filter(id__in=asset_id)
-    else:
-        asset=Asset.objects.all()
-    return render(request, 'myapp/personel/managerList.html', {'title':'مشخصات','section':'list_personel','asset':asset,'date':formatted_date})
 @login_required(login_url="/managerlogin/")
 def list_personel_breif_all(request):
     # Get today's date
@@ -765,18 +769,3 @@ def list_personel_breif_all(request):
     else:
         asset=Asset.objects.all()
     return render(request, 'myapp/personel/managerList0.html', {'title':'مشخصات','section':'list_personel','asset':asset,'date':formatted_date})
-def list_assets(request):
-    # Get today's date
-    data=dict()
-    yesterday=DateJob.get_yesterday_greg()
-    jalali_date=jdatetime.date.fromgregorian(date=yesterday)
-    formatted_date = f"{jalali_date.year:04d}-{jalali_date.month:02d}-{jalali_date.day:02d}"
-
-    assets=None
-    assets=Asset.objects.all()
-    asset_list=[]
-    for i in assets:
-        asset_list.append({'id':i.id,'name':i.assetName})
-    data['assets']=asset_list
-
-    return JsonResponse(asset_list,safe=False)

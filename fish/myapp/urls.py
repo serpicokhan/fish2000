@@ -65,6 +65,7 @@ urlpatterns = [
     url(r'^Hozur/Success/$',show_hozur_success,name='show_hozur_success'),
     url(r'^Hozur/Delete$',hozur_delete,name='hozur_delete'),
     url(r'^api/v1/assets$',list_assets,name='list_assets'),
+    url(r'^api/v1/ita$',send_ita_view,name='send_ita_view'),
 
 
 
